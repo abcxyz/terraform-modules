@@ -32,6 +32,12 @@ variable "name" {
   }
 }
 
+variable "service_iam" {
+  description = "IAM bindings in {ROLE => [MEMBERS]} format for the Cloud Run service."
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "secrets" {
   type        = list(any)
   default     = []
@@ -120,17 +126,4 @@ variable "secret_volumes" {
   }))
   default     = {}
   description = "Volume mounts for the Cloud Run service (Secret Manager)."
-}
-
-variable "developers" {
-  type        = list(any)
-  default     = []
-  description = "Principal identities that will be granted the developers role for the Cloud Run service (https://cloud.google.com/iam/docs/principal-identifiers)."
-}
-
-
-variable "invokers" {
-  type        = list(any)
-  default     = []
-  description = "Principal identities that will be granted the invokers role for the Cloud Run service (https://cloud.google.com/iam/docs/principal-identifiers)."
 }
