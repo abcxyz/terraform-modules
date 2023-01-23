@@ -160,20 +160,14 @@ resource "google_cloud_run_service" "service" {
   ]
 }
 
-resource "google_cloud_run_service_iam_binding" "run_developer_iam" {
-  location = google_cloud_run_service.service.location
-  project  = google_cloud_run_service.service.project
-  service  = google_cloud_run_service.service.name
-  role     = "roles/run.developer"
-  members  = toset(var.developers)
-}
+resource "google_cloud_run_service_iam_binding" "default" {
+  for_each = var.service_iam
 
-resource "google_cloud_run_service_iam_binding" "run_invoker_iam" {
   location = google_cloud_run_service.service.location
   project  = google_cloud_run_service.service.project
   service  = google_cloud_run_service.service.name
-  role     = "roles/run.invoker"
-  members  = toset(var.invokers)
+  role     = each.key          # key is the ROLE value
+  members  = toset(each.value) # value is the list of MEMBERS
 }
 
 resource "google_project_iam_member" "run_observability_iam" {
