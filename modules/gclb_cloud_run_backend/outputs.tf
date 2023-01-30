@@ -12,7 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-output "external_ip" {
+output "external_ip_name" {
+  description = "The external IPv4 name assigned to the global fowarding rule."
+  value       = google_compute_global_address.default.name
+}
+
+output "external_ip_address" {
   description = "The external IPv4 assigned to the global fowarding rule."
-  value       = google_compute_global_address.default
+  value       = google_compute_global_address.default.address
 }
