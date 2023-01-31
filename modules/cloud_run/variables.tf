@@ -33,9 +33,17 @@ variable "name" {
 }
 
 variable "service_iam" {
-  description = "IAM bindings in {ROLE => [MEMBERS]} format for the Cloud Run service."
-  type        = map(list(string))
-  default     = {}
+  description = "IAM member bindings for the Cloud Run service."
+  type = object({
+    admins     = list(string)
+    developers = list(string)
+    invokers   = list(string)
+  })
+  default = {
+    admins     = []
+    developers = []
+    invokers   = []
+  }
 }
 
 variable "secrets" {
