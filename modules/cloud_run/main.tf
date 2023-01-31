@@ -164,7 +164,7 @@ resource "google_cloud_run_service_iam_binding" "admins" {
   location = google_cloud_run_service.service.location
   project  = google_cloud_run_service.service.project
   service  = google_cloud_run_service.service.name
-  role     = "role/run.admin"
+  role     = "roles/run.admin"
   members  = toset(var.service_iam.admins)
 }
 
@@ -172,7 +172,7 @@ resource "google_cloud_run_service_iam_binding" "invokers" {
   location = google_cloud_run_service.service.location
   project  = google_cloud_run_service.service.project
   service  = google_cloud_run_service.service.name
-  role     = "role/run.invoker"
+  role     = "roles/run.invoker"
   members  = toset(var.service_iam.invokers)
 }
 
@@ -180,7 +180,7 @@ resource "google_cloud_run_service_iam_binding" "developers" {
   location = google_cloud_run_service.service.location
   project  = google_cloud_run_service.service.project
   service  = google_cloud_run_service.service.name
-  role     = "role/run.developer"
+  role     = "roles/run.developer"
   members  = toset(var.service_iam.developers)
 }
 
