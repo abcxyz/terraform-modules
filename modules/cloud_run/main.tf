@@ -161,33 +161,27 @@ resource "google_cloud_run_service" "service" {
 }
 
 resource "google_cloud_run_service_iam_binding" "admins" {
-  for_each = var.service_iam.admins
-
   location = google_cloud_run_service.service.location
   project  = google_cloud_run_service.service.project
   service  = google_cloud_run_service.service.name
   role     = "role/run.admin"
-  members  = toset(each.value)
+  members  = toset(var.service_iam.admins)
 }
 
 resource "google_cloud_run_service_iam_binding" "invokers" {
-  for_each = var.service_iam.invokers
-
   location = google_cloud_run_service.service.location
   project  = google_cloud_run_service.service.project
   service  = google_cloud_run_service.service.name
   role     = "role/run.invoker"
-  members  = toset(each.value)
+  members  = toset(var.service_iam.invokers)
 }
 
 resource "google_cloud_run_service_iam_binding" "developers" {
-  for_each = var.service_iam.developers
-
   location = google_cloud_run_service.service.location
   project  = google_cloud_run_service.service.project
   service  = google_cloud_run_service.service.name
   role     = "role/run.developer"
-  members  = toset(each.value)
+  members  = toset(var.service_iam.developers)
 }
 
 resource "google_project_iam_member" "run_observability_iam" {
