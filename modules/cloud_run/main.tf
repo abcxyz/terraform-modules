@@ -223,6 +223,12 @@ resource "google_secret_manager_secret_version" "secrets_default_version" {
   # default value used for initial revision to allow cloud run to map the secret
   # to manage this value and versions, use the google cloud web application
   secret_data = "DEFAULT_VALUE"
+
+  lifecycle {
+    ignore_changes = [
+      enabled
+    ]
+  }
 }
 
 resource "google_secret_manager_secret_iam_member" "secrets_accessors_iam" {
