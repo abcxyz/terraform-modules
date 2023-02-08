@@ -62,7 +62,7 @@ resource "google_artifact_registry_repository_iam_binding" "ci_service_account_i
   project    = google_artifact_registry_repository.artifact_repository.project
   location   = google_artifact_registry_repository.artifact_repository.location
   repository = google_artifact_registry_repository.artifact_repository.name
-  role       = "roles/artifactregistry.writer"
+  role       = "roles/artifactregistry.repoAdmin"
   members    = toset(["serviceAccount:${google_service_account.ci_service_account.email}"])
 }
 
