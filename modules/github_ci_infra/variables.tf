@@ -26,6 +26,11 @@ variable "name" {
   }
 }
 
+variable "github_owner_name" {
+  type        = string
+  description = "The GitHub owner name to grant access to the WIF pool GitHub provider (e.g. organization)."
+}
+
 variable "github_repository_name" {
   type        = string
   description = "The GitHub repository name to grant access to the WIF pool GitHub provider (e.g. repo-name)."
