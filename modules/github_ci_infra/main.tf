@@ -12,20 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-locals {
-  github_owner_name = "abcxyz"
-}
-
 resource "random_id" "default" {
   byte_length = 2
 }
 
 data "github_organization" "owner" {
-  name = local.github_owner_name
+  name = var.github_owner_name
 }
 
 data "github_repository" "repo" {
-  full_name = "${local.github_owner_name}/${var.github_repository_name}"
+  full_name = "${var.github_owner_name}/${var.github_repository_name}"
 }
 
 # Project Services
@@ -66,7 +62,7 @@ resource "google_artifact_registry_repository_iam_binding" "ci_service_account_i
   members    = toset(["serviceAccount:${google_service_account.ci_service_account.email}"])
 }
 
-# Workload Identity Federation - currently only allowed in abcxyz org
+# Workload Identity Federation
 resource "google_iam_workload_identity_pool" "github_pool" {
   project                   = var.project_id
   workload_identity_pool_id = "github-pool-${random_id.default.hex}"
