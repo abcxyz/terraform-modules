@@ -135,3 +135,9 @@ variable "secret_volumes" {
   default     = {}
   description = "Volume mounts for the Cloud Run service (Secret Manager)."
 }
+
+variable "args" {
+  type        = list(string)
+  default     = []
+  description = "Arguments to the cloud run container's entrypoint."
+}
