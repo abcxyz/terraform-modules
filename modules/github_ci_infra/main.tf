@@ -16,7 +16,8 @@ resource "random_id" "default" {
   byte_length = 2
 }
 
-data "github_organization" "owner" {
+data "github_organization" "org" {
+  count = var.github_owner_id == null ? 1 : 0 # Only look up ID if it's not provided
   name = var.github_owner_name
 }
 
@@ -96,7 +97,7 @@ resource "google_iam_workload_identity_pool_provider" "github_provider" {
   #
   # We also prevent pull_request_target, since that runs arbitrary code:
   #   https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
-  attribute_condition = "attribute.event_name != \"pull_request_target\" && attribute.repository_owner_id == \"${data.github_organization.owner.id}\" && attribute.repository_id == \"${data.github_repository.repo.repo_id}\""
+  attribute_condition = "attribute.event_name != \"pull_request_target\" && attribute.repository_owner_id == \"${var.github_owner_id != null ? var.github_owner_id : data.github_organization.org[0].id}\" && attribute.repository_id == \"${data.github_repository.repo.repo_id}\""
 
   oidc {
     issuer_uri = "https://token.actions.githubusercontent.com"
