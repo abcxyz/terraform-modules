@@ -17,7 +17,11 @@ resource "random_id" "default" {
 }
 
 data "github_organization" "org" {
-  count = var.github_owner_id == null ? 1 : 0 # Only look up ID if it's not provided
+  # We only use the GitHub organization for it's ID number. This only works if the owner is an
+  # organization though (not if it's a person). Therefore, we make this lookup conditional. If
+  # the owner is a person, then the caller can provide the owner ID, and this lookup will be
+  # skipped.
+  count = var.github_owner_id == null ? 1 : 0
   name = var.github_owner_name
 }
 
