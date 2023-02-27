@@ -16,18 +16,6 @@ resource "random_id" "default" {
   byte_length = 2
 }
 
-data "github_organization" "org" {
-  # We only use the GitHub organization for it's ID number. This only works if the owner is an
-  # organization though (not if it's a person). Therefore, we make this lookup conditional. If
-  # the owner is a person, then the caller can provide the owner ID, and this lookup will be
-  # skipped.
-  count = var.github_owner_id == null ? 1 : 0
-  name = var.github_owner_name
-}
-
-data "github_repository" "repo" {
-  full_name = "${var.github_owner_name}/${var.github_repository_name}"
-}
 
 # Project Services
 resource "google_project_service" "services" {
@@ -84,7 +72,7 @@ resource "google_iam_workload_identity_pool_provider" "github_provider" {
   workload_identity_pool_id          = google_iam_workload_identity_pool.github_pool.workload_identity_pool_id
   workload_identity_pool_provider_id = "github-provider"
   display_name                       = "GitHub WIF Provider"
-  description                        = "GitHub OIDC identity provider for ${data.github_repository.repo.full_name} CI environment"
+  description                        = "GitHub OIDC identity provider for GitHub repo ${var.github_repository_id} CI environment"
   attribute_mapping = {
     "google.subject" : "assertion.sub"
     "attribute.actor" : "assertion.actor"
@@ -101,7 +89,7 @@ resource "google_iam_workload_identity_pool_provider" "github_provider" {
   #
   # We also prevent pull_request_target, since that runs arbitrary code:
   #   https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
-  attribute_condition = "attribute.event_name != \"pull_request_target\" && attribute.repository_owner_id == \"${var.github_owner_id != null ? var.github_owner_id : data.github_organization.org[0].id}\" && attribute.repository_id == \"${data.github_repository.repo.repo_id}\""
+  attribute_condition = "attribute.event_name != \"pull_request_target\" && attribute.repository_owner_id == \"${var.github_owner_id}\" && attribute.repository_id == \"${var.github_repository_id}\""
 
   oidc {
     issuer_uri = "https://token.actions.githubusercontent.com"

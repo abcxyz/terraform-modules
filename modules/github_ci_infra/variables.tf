@@ -26,20 +26,14 @@ variable "name" {
   }
 }
 
-variable "github_owner_name" {
-  type        = string
-  description = "The GitHub owner name to grant access to the WIF pool GitHub provider (e.g. organization)."
-}
-
 variable "github_owner_id" {
-  type = string
-  default = null
-  description = "The GitHub owner ID to grant access to the WIF pool. This can be omitted if github_owner_name is an organization. Otherwise, (say if github_owner_name is a username and not an org), then this must be provided. It can be found at https://api.github.com/users/$USERNAME ."
+  type = number
+  description = "The GitHub ID of the owner of the repository whose workflows will be granted access to the WIF pool (i.e. an organization ID or user ID)."
 }
 
-variable "github_repository_name" {
-  type        = string
-  description = "The GitHub repository name to grant access to the WIF pool GitHub provider (e.g. repo-name)."
+variable "github_repository_id" {
+  type        = number
+  description = "The GitHub ID of the repository whose workflows will be granted access to the WIF pool."
 }
 
 variable "registry_repository_id" {
