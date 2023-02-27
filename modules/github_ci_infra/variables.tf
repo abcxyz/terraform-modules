@@ -27,7 +27,7 @@ variable "name" {
 }
 
 variable "github_owner_id" {
-  type = number
+  type        = number
   description = "The GitHub ID of the owner of the repository whose workflows will be granted access to the WIF pool (i.e. an organization ID or user ID)."
 }
 
