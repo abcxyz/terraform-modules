@@ -17,6 +17,16 @@ output "artifact_repository_name" {
   value       = google_artifact_registry_repository.artifact_repository.name
 }
 
+output "artifact_repository_id" {
+  description = "The Artifact Registry ID, e.g. ci-images"
+  value       = google_artifact_registry_repository.artifact_repository.repository_id
+}
+
+output "artifact_repository_location" {
+  description = "The Artifact Registry repository location, e.g. \"us\" or \"us-west1\""
+  value       = google_artifact_registry_repository.artifact_repository.location
+}
+
 output "wif_pool_name" {
   description = "The Workload Identity Federation pool name."
   value       = google_iam_workload_identity_pool.github_pool.name
