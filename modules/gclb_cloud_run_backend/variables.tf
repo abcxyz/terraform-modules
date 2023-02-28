@@ -53,13 +53,11 @@ variable "iap_config" {
     enable                      = bool
     oauth2_client_id            = string
     oauth2_client_secret        = string
-    oauth2_client_secret_sha256 = optional(string)
   })
   default = {
     enable                      = false
     oauth2_client_id            = ""
     oauth2_client_secret        = ""
-    oauth2_client_secret_sha256 = ""
   }
   description = "Identity-Aware Proxy configuration for the load balancer."
 }

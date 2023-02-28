@@ -146,7 +146,6 @@ resource "google_compute_backend_service" "default" {
     content {
       oauth2_client_id            = var.iap_config.oauth2_client_id
       oauth2_client_secret        = var.iap_config.oauth2_client_secret
-      oauth2_client_secret_sha256 = var.iap_config.oauth2_client_secret_sha256
     }
   }
 }
