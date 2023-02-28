@@ -53,7 +53,7 @@ variable "iap_config" {
     enable                      = bool
     oauth2_client_id            = string
     oauth2_client_secret        = string
-    oauth2_client_secret_sha256 = string
+    oauth2_client_secret_sha256 = optional(string)
   })
   default = {
     enable                      = false
