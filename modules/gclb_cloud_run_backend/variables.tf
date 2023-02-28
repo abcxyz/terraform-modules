@@ -50,14 +50,14 @@ variable "security_policy" {
 
 variable "iap_config" {
   type = object({
-    enable                      = bool
-    oauth2_client_id            = string
-    oauth2_client_secret        = string
+    enable               = bool
+    oauth2_client_id     = string
+    oauth2_client_secret = string
   })
   default = {
-    enable                      = false
-    oauth2_client_id            = ""
-    oauth2_client_secret        = ""
+    enable               = false
+    oauth2_client_id     = ""
+    oauth2_client_secret = ""
   }
   description = "Identity-Aware Proxy configuration for the load balancer."
 }
