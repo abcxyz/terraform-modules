@@ -26,14 +26,18 @@ module "cloudrun_cicd" {
 
   deployment_environments = [
     {
-      environment_name = "dev"
-      cloudrun_region  = "us-west1"
-      environment_type = "non-prod" # Not publicly reachable
+      environment_name         = "dev"
+      cloudrun_region          = "us-west1"
+      environment_type         = "non-prod" # Not publicly reachable
+      reviewer_user_github_ids = null
+      reviewer_team_github_ids = null
     },
     {
-      environment_name = "staging"
-      cloudrun_region  = "us-west1"
-      environment_type = "non-prod" # Not publicly reachable
+      environment_name         = "staging"
+      cloudrun_region          = "us-west1"
+      environment_type         = "non-prod" # Not publicly reachable
+      reviewer_user_github_ids = null
+      reviewer_team_github_ids = null
     },
     {
       environment_name         = "prod"

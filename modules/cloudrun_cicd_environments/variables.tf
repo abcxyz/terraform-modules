@@ -58,8 +58,8 @@ variable "deployment_environments" {
     environment_name         = string
     environment_type         = string
     cloudrun_region          = string
-    reviewer_user_github_ids = optional(list(number))
-    reviewer_team_github_ids = optional(list(number))
+    reviewer_user_github_ids = list(number)
+    reviewer_team_github_ids = list(number)
   }))
   # Validating environment_type is not done here; validation will happen in the sub-module that it gets passed to.
   description = <<EOT
