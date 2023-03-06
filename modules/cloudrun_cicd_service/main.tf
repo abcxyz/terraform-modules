@@ -82,25 +82,3 @@ resource "github_actions_secret" "gar_repo_id_secret" {
   secret_name     = "gar_repo_id"
   plaintext_value = var.service_name
 }
-
-module "env" {
-  for_each = {
-    for index, de in var.deployment_environments :
-    de.environment_name => de
-  }
-
-  source                       = "./single_environment"
-  folder_id                    = var.folder_id
-  billing_account              = var.billing_account
-  admin_project_id             = google_project.admin_project.project_id
-  cicd_service_account_email   = module.github_ci_access_config.service_account_email
-  github_repository_name       = var.github_repository_name
-  service_name                 = var.service_name
-  artifact_repository_location = module.github_ci_access_config.artifact_repository_location
-  artifact_repository_id       = module.github_ci_access_config.artifact_repository_id
-  environment_name             = each.key
-  environment_type             = each.value.environment_type
-  cloudrun_region              = each.value.cloudrun_region
-  reviewer_team_github_ids     = each.value.reviewer_team_github_ids
-  reviewer_user_github_ids     = each.value.reviewer_user_github_ids
-}

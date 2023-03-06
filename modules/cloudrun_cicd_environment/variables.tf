@@ -12,45 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-variable "service_name" {
-  type = string
-  validation {
-    condition     = can(regex("^[a-z][0-9a-z-]+[0-9a-z]$", var.service_name))
-    error_message = "Name can only contain lowercase letters, numbers, hyphens(-) and must start with letter. Name will be truncated and suffixed with at random string if it exceeds requirements for a given resource."
-  }
-  description = "A string that identifies this service; it will be become part of the name of many of the created resources such as project names"
-}
-
-variable "folder_id" {
-  type        = string
-  description = "The ID of the GCP folder in which to create projects."
-}
-
-variable "billing_account" {
-  type        = string
-  default     = null
-  description = "GCP billing account to associate with GCP projects. Since company policy requires GCP projects to be created initially without a billing account and then associated with billing account by a human, this variable will usually be null."
-}
-
-variable "admin_project_id" {
-  type        = string
-  description = "The project ID of the GCP project that contains the artifact repository and WIF pool."
-}
-
-variable "github_repository_name" {
-  type        = string
-  description = "The name of the GitHub repository containing the service's source code, not including the org/owner."
-}
-
 variable "initial_container_image" {
   type        = string
   description = "The path of the docker image that will be served by Cloud Run until the first deployment."
   default     = "us-docker.pkg.dev/cloudrun/container/hello"
-}
-
-variable "cicd_service_account_email" {
-  type        = string
-  description = "The email address of the service account that the GitHub workflows will authenticate as."
 }
 
 variable "cloudrun_region" {
@@ -81,21 +46,37 @@ variable "reviewer_team_github_ids" {
   description = "A list of GitHub team IDs whose members will have permission to approve releases into this environment."
 }
 
-variable "artifact_repository_location" {
-  type        = string
-  description = "The location to create the artifact registry repository (defaults to 'us')."
-}
-
-variable "artifact_repository_id" {
-  type        = string
-  description = "The ID of the GCP Artifact Registry repository holding container images for this service."
-
-}
-
 variable "environment_type" {
-  type = string
+  type    = string
+  default = "non-prod"
   validation {
     condition     = contains(["prod", "non-prod"], var.environment_type)
     error_message = "environment type must be prod or non-prod"
   }
+}
+
+variable "min_cloudrun_instances" {
+  type        = number
+  default     = 3
+  description = "The minimum number of Cloud Run containers for this environment. >=3 is recommended for uptime."
+}
+
+variable "max_cloudrun_instances" {
+  type        = number
+  default     = 50 # Chosen arbitrarily, can be changed
+  description = "The maximum number of Cloud Run containers for this environment, to avoid runaway costs under heavy load"
+}
+
+variable "svc" {
+  description = "The object returned from cloudrun_cicd containing various identifiers for this service; this saves copypasta compared to passing them one by one"
+  type = object({
+    folder_id                    = string
+    billing_account              = string
+    admin_project_id             = string
+    cicd_service_account_email   = string
+    github_repository_name       = string
+    service_name                 = string
+    artifact_repository_location = string
+    artifact_repository_id       = string
+  })
 }

@@ -52,22 +52,3 @@ variable "artifact_repository_location" {
   default     = "us"
   description = "The location to create the artifact registry repository (defaults to 'us')."
 }
-
-variable "deployment_environments" {
-  type = list(object({
-    environment_name         = string
-    environment_type         = string
-    cloudrun_region          = string
-    reviewer_user_github_ids = list(number)
-    reviewer_team_github_ids = list(number)
-  }))
-  # Validating environment_type is not done here; validation will happen in the sub-module that it gets passed to.
-  description = <<EOT
-A list of deployment environments (e.g. dev/staging/prod), along with options.
-environment_name will be used as the GitHub environment name, and will be included in some GCP resource names.
-environment_type must be "prod" or "non-prod".
-cloudrun_region must be a GCP region.
-reviewer_user_github_ids is a list of GitHub user IDs that will have permission to approve releases into this environment.
-reviewer_team_github_ids is a list of GitHub team IDs whose members will have permission to approve releases into this environment.
-EOT
-}

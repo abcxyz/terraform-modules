@@ -12,10 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module "cloudrun_cicd" {
-  source = "github.com/abcxyz/terraform-modules/modules/cloudrun_cicd_environments"
+module "service" {
+  source = "github.com/abcxyz/terraform-modules/modules/cloudrun_cicd_service"
 
-  billing_account        = "123456-1234-123456"
+  # billing_account should be left blank in the case where you need a human to manually associate
+  # your project with a billing account. In that case, terraform will create projects but fail to
+  # create resources within those projects. After the projects have been associated with a billing
+  # account, re-run terraform to create all remaining resources.
+  #
+  # If, on the other hand, you have permission to create a project with an associated billing
+  # account, you can put it here and terraform will work on the first run.
+  billing_account = "123456-1234-123456"
+
   folder_id              = "123456789012"
   github_owner_id        = 123456 # github.com/your-org
   github_repository_name = "your-repo"
@@ -23,28 +31,30 @@ module "cloudrun_cicd" {
 
   service_name                 = "my-hello-service" # Just pick a descriptive name
   artifact_repository_location = "us-west1"
+}
 
-  deployment_environments = [
-    {
-      environment_name         = "dev"
-      cloudrun_region          = "us-west1"
-      environment_type         = "non-prod" # Not publicly reachable
-      reviewer_user_github_ids = null
-      reviewer_team_github_ids = null
-    },
-    {
-      environment_name         = "staging"
-      cloudrun_region          = "us-west1"
-      environment_type         = "non-prod" # Not publicly reachable
-      reviewer_user_github_ids = null
-      reviewer_team_github_ids = null
-    },
-    {
-      environment_name         = "prod"
-      cloudrun_region          = "us-west1"
-      environment_type         = "prod" # Publicly reachable
-      reviewer_user_github_ids = [123456]
-      reviewer_team_github_ids = [1234567]
-    },
-  ]
+module "dev" {
+  source                 = "github.com/abcxyz/terraform-modules/modules/cloudrun_cicd_environment"
+  svc                    = module.service.resources
+  environment_name       = "dev"
+  min_cloudrun_instances = 1
+  cloudrun_region        = "us-west1"
+}
+
+module "staging" {
+  source           = "github.com/abcxyz/terraform-modules/modules/cloudrun_cicd_environment"
+  svc              = module.service.resources
+  environment_name = "staging"
+  cloudrun_region  = "us-west1"
+}
+
+module "prod" {
+  source                   = "github.com/abcxyz/terraform-modules/modules/cloudrun_cicd_environment"
+  svc                      = module.service.resources
+  environment_name         = "prod"
+  cloudrun_region          = "us-west1"
+  environment_type         = "prod" # Publicly reachable
+  protected_branches       = true
+  reviewer_user_github_ids = [123456]
+  reviewer_team_github_ids = [1234567]
 }
