@@ -59,7 +59,7 @@ resource "google_service_account_iam_member" "impersonate" {
 }
 
 module "cloud_run_service" {
-  source                = "github.com/abcxyz/terraform-modules/modules/cloud_run"
+  source                = "../cloud_run"
   project_id            = google_project.project.project_id
   region                = var.cloudrun_region
   name                  = var.svc.service_name
