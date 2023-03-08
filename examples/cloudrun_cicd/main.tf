@@ -45,9 +45,9 @@ module "dev" {
 }
 
 module "staging" {
-  source           = "git::https://github.com/abcxyz/terraform-modules.git//modules/cloudrun_cicd_environment?ref=PUT_LATEST_SHA_OR_TAG_HERE"
-  svc              = module.service.resources
-  environment_name = "staging"
+  source                 = "git::https://github.com/abcxyz/terraform-modules.git//modules/cloudrun_cicd_environment?ref=PUT_LATEST_SHA_OR_TAG_HERE"
+  svc                    = module.service.resources
+  environment_name       = "staging"
   protected_branches     = false
   custom_branch_policies = false
   cloudrun_invokers      = ["user:example@google.com", "domain:example.com", "group:hello-staging-users@example.com"]

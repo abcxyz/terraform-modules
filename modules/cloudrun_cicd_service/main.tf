@@ -13,7 +13,7 @@
 # limitations under the License.
 
 locals {
-  service_and_env = "${var.service_name}-admin"
+  service_and_env     = "${var.service_name}-admin"
   project_name_and_id = "${substr(local.service_and_env, 0, 25)}-${random_id.default.hex}" # 30 character limit
 }
 
