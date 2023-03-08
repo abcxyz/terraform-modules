@@ -12,9 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+locals {
+  service_and_env = "${var.service_name}-admin"
+  project_name_and_id = "${substr(local.service_and_env, 0, 25)}-${random_id.default.hex}" # 30 character limit
+}
+
+resource "random_id" "default" {
+  byte_length = 2
+}
+
 resource "google_project" "admin_project" {
-  name            = "${var.service_name} admin"
-  project_id      = "${var.service_name}-admin"
+  name       = local.project_name_and_id
+  project_id = local.project_name_and_id
+
   folder_id       = var.folder_id
   billing_account = var.billing_account
 
@@ -35,12 +45,12 @@ resource "google_project_service" "admin_enabled_services" {
 
 # Create the WIF pool, artifact registry, and service account.
 module "github_ci_access_config" {
-  source                 = "github.com/abcxyz/terraform-modules/modules/github_ci_infra"
+  source                 = "git::https://github.com/abcxyz/terraform-modules.git//modules/github_ci_infra?ref=41836e2b91baa1a7552b41f76fb9a8f261ae7dbe"
   project_id             = google_project.admin_project.project_id
   github_repository_id   = var.github_repository_id
   github_owner_id        = var.github_owner_id
   name                   = var.service_name
-  registry_repository_id = var.service_name
+  registry_repository_id = substr("${var.service_name}-images", 0, 63)
   registry_location      = var.artifact_repository_location
   depends_on = [
     google_project_service.admin_enabled_services
@@ -80,5 +90,5 @@ resource "github_actions_secret" "gar_location_secret" {
 resource "github_actions_secret" "gar_repo_id_secret" {
   repository      = var.github_repository_name
   secret_name     = "gar_repo_id"
-  plaintext_value = var.service_name
+  plaintext_value = module.github_ci_access_config.artifact_repository_id
 }

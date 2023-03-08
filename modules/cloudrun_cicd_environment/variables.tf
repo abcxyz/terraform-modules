@@ -28,12 +28,6 @@ variable "environment_name" {
   description = "The GitHub environment name. It will also be included in some GCP resource names."
 }
 
-variable "protected_branches" {
-  type        = bool
-  default     = false
-  description = "Whether this environment should only allow deployment from GitHub branches that have protection enabled"
-}
-
 variable "reviewer_user_github_ids" {
   type        = list(number)
   default     = null
@@ -44,15 +38,6 @@ variable "reviewer_team_github_ids" {
   type        = list(number)
   default     = null
   description = "A list of GitHub team IDs whose members will have permission to approve releases into this environment."
-}
-
-variable "environment_type" {
-  type    = string
-  default = "non-prod"
-  validation {
-    condition     = contains(["prod", "non-prod"], var.environment_type)
-    error_message = "environment type must be prod or non-prod"
-  }
 }
 
 variable "min_cloudrun_instances" {
@@ -79,4 +64,25 @@ variable "svc" {
     artifact_repository_location = string
     artifact_repository_id       = string
   })
+}
+
+variable "cloudrun_ingress" {
+  type        = string
+  default     = "all"
+  description = "The ingress settings for the Cloud Run service, possible values: all, internal, internal-and-cloud-load-balancing (defaults to 'all')."
+}
+
+variable "cloudrun_invokers" {
+  type        = list(string)
+  description = "The list of IAM members who can access the Cloud Run service. examples: allUsers, serviceAccount:foo@bar"
+}
+
+variable "protected_branches" {
+  type        = bool
+  description = "Whether only GitHub branches with branch protection rules can deploy to this environment. See https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_environment."
+}
+
+variable "custom_branch_policies" {
+  type        = bool
+  description = "Whether only GitHub branches that match the specified name patterns can deploy to this environment. See https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_environment."
 }

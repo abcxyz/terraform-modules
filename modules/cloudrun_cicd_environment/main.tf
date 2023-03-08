@@ -12,9 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+locals {
+  service_and_env = "${var.svc.service_name}-${var.environment_name}"
+  project_name_and_id = "${substr(local.service_and_env, 0, 25)}-${random_id.default.hex}" # 30 character limit
+}
+
+resource "random_id" "default" {
+  byte_length = 2
+}
+
 resource "google_project" "project" {
-  name       = "${var.svc.service_name} ${var.environment_name}"
-  project_id = "${var.svc.service_name}-${var.environment_name}"
+  name       = local.project_name_and_id
+  project_id = local.project_name_and_id
 
   folder_id       = var.svc.folder_id
   billing_account = var.svc.billing_account
@@ -38,10 +47,9 @@ resource "google_project_service" "default" {
 }
 
 resource "google_service_account" "cloudrun_service_account" {
-  depends_on   = [google_project_service.default]
-  account_id   = "${var.svc.service_name}-${var.environment_name}-sa"
-  display_name = "${var.svc.service_name} ${var.environment_name} SA"
-  project      = google_project.project.project_id
+  depends_on = [google_project_service.default]
+  account_id = "cloudrun-sa"
+  project    = google_project.project.project_id
 }
 
 resource "google_service_account_iam_member" "impersonate" {
@@ -56,13 +64,13 @@ module "cloud_run_service" {
   region                = var.cloudrun_region
   name                  = var.svc.service_name
   min_instances         = var.min_cloudrun_instances
-  ingress               = var.environment_type == "prod" ? "all" : "internal"
+  ingress               = var.cloudrun_ingress
   image                 = var.initial_container_image
   service_account_email = google_service_account.cloudrun_service_account.email
   service_iam = {
     developers = ["serviceAccount:${var.svc.cicd_service_account_email}"]
     admins     = []
-    invokers   = []
+    invokers   = var.cloudrun_invokers
   }
 }
 
@@ -88,13 +96,9 @@ resource "github_repository_environment" "default" {
     teams = var.reviewer_team_github_ids
   }
 
-  # We only want a deployment_branch_policy for production environments.
-  dynamic "deployment_branch_policy" {
-    for_each = var.environment_type == "prod" ? [1] : []
-    content {
-      protected_branches     = true
-      custom_branch_policies = true
-    }
+  deployment_branch_policy {
+    protected_branches     = var.protected_branches
+    custom_branch_policies = var.custom_branch_policies
   }
 }
 

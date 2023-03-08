@@ -13,7 +13,7 @@
 # limitations under the License.
 
 module "service" {
-  source = "github.com/abcxyz/terraform-modules/modules/cloudrun_cicd_service"
+  source = "git::https://github.com/abcxyz/terraform-modules.git//modules/cloudrun_cicd_service?ref=PUT_LATEST_SHA_OR_TAG_HERE"
 
   # billing_account should be left blank in the case where you need a human to manually associate
   # your project with a billing account. In that case, terraform will create projects but fail to
@@ -34,27 +34,34 @@ module "service" {
 }
 
 module "dev" {
-  source                 = "github.com/abcxyz/terraform-modules/modules/cloudrun_cicd_environment"
+  source                 = "git::https://github.com/abcxyz/terraform-modules.git//modules/cloudrun_cicd_environment?ref=PUT_LATEST_SHA_OR_TAG_HERE"
   svc                    = module.service.resources
   environment_name       = "dev"
+  protected_branches     = false
+  custom_branch_policies = false
   min_cloudrun_instances = 1
+  cloudrun_invokers      = ["user:example@google.com", "domain:example.com", "group:hello-dev-users@example.com"]
   cloudrun_region        = "us-west1"
 }
 
 module "staging" {
-  source           = "github.com/abcxyz/terraform-modules/modules/cloudrun_cicd_environment"
+  source           = "git::https://github.com/abcxyz/terraform-modules.git//modules/cloudrun_cicd_environment?ref=PUT_LATEST_SHA_OR_TAG_HERE"
   svc              = module.service.resources
   environment_name = "staging"
-  cloudrun_region  = "us-west1"
+  protected_branches     = false
+  custom_branch_policies = false
+  cloudrun_invokers      = ["user:example@google.com", "domain:example.com", "group:hello-staging-users@example.com"]
+  cloudrun_region        = "us-west1"
 }
 
 module "prod" {
-  source                   = "github.com/abcxyz/terraform-modules/modules/cloudrun_cicd_environment"
+  source                   = "git::https://github.com/abcxyz/terraform-modules.git//modules/cloudrun_cicd_environment?ref=PUT_LATEST_SHA_OR_TAG_HERE"
   svc                      = module.service.resources
   environment_name         = "prod"
   cloudrun_region          = "us-west1"
-  environment_type         = "prod" # Publicly reachable
+  cloudrun_invokers        = ["allUsers"] # In this example, production is a public service. Maybe yours shouldn't be.
   protected_branches       = true
+  custom_branch_policies   = true
   reviewer_user_github_ids = [123456]
   reviewer_team_github_ids = [1234567]
 }
