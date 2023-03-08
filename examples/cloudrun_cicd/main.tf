@@ -34,7 +34,8 @@ module "service" {
 }
 
 module "dev" {
-  source                 = "git::https://github.com/abcxyz/terraform-modules.git//modules/cloudrun_cicd_environment?ref=PUT_LATEST_SHA_OR_TAG_HERE"
+  source = "git::https://github.com/abcxyz/terraform-modules.git//modules/cloudrun_cicd_environment?ref=PUT_LATEST_SHA_OR_TAG_HERE"
+
   svc                    = module.service.resources
   environment_name       = "dev"
   protected_branches     = false
@@ -45,7 +46,8 @@ module "dev" {
 }
 
 module "staging" {
-  source                 = "git::https://github.com/abcxyz/terraform-modules.git//modules/cloudrun_cicd_environment?ref=PUT_LATEST_SHA_OR_TAG_HERE"
+  source = "git::https://github.com/abcxyz/terraform-modules.git//modules/cloudrun_cicd_environment?ref=PUT_LATEST_SHA_OR_TAG_HERE"
+
   svc                    = module.service.resources
   environment_name       = "staging"
   protected_branches     = false
@@ -55,7 +57,8 @@ module "staging" {
 }
 
 module "prod" {
-  source                   = "git::https://github.com/abcxyz/terraform-modules.git//modules/cloudrun_cicd_environment?ref=PUT_LATEST_SHA_OR_TAG_HERE"
+  source = "git::https://github.com/abcxyz/terraform-modules.git//modules/cloudrun_cicd_environment?ref=PUT_LATEST_SHA_OR_TAG_HERE"
+
   svc                      = module.service.resources
   environment_name         = "prod"
   cloudrun_region          = "us-west1"

@@ -35,21 +35,20 @@ resource "google_project" "project" {
 }
 
 resource "google_project_service" "default" {
-  depends_on = [
-    google_project.project
-  ]
   for_each = toset([
     "iam.googleapis.com",
     "run.googleapis.com",
   ])
-  service = each.value
+
   project = google_project.project.project_id
+  service = each.value
 }
 
 resource "google_service_account" "cloudrun_service_account" {
-  depends_on = [google_project_service.default]
-  account_id = "cloudrun-sa"
   project    = google_project.project.project_id
+  account_id = "cloudrun-sa"
+
+  depends_on = [google_project_service.default]
 }
 
 resource "google_service_account_iam_member" "impersonate" {
@@ -59,7 +58,8 @@ resource "google_service_account_iam_member" "impersonate" {
 }
 
 module "cloud_run_service" {
-  source                = "../cloud_run"
+  source = "../cloud_run"
+
   project_id            = google_project.project.project_id
   region                = var.cloudrun_region
   name                  = var.svc.service_name
@@ -84,41 +84,4 @@ resource "google_artifact_registry_repository_iam_member" "cloudrun_sa_gar_reade
   depends_on = [
     module.cloud_run_service
   ]
-}
-
-resource "github_repository_environment" "default" {
-  environment = var.environment_name
-  # This is just the repo name without the org name. The org name is implied by the github auth token.
-  # There's no way to just specify the owner.
-  repository = var.svc.github_repository_name
-  reviewers {
-    users = var.reviewer_user_github_ids
-    teams = var.reviewer_team_github_ids
-  }
-
-  deployment_branch_policy {
-    protected_branches     = var.protected_branches
-    custom_branch_policies = var.custom_branch_policies
-  }
-}
-
-resource "github_actions_environment_secret" "cloudrun_project_id_secret" {
-  repository      = var.svc.github_repository_name
-  environment     = var.environment_name
-  secret_name     = "cloudrun_project_id"
-  plaintext_value = google_project.project.project_id
-}
-
-resource "github_actions_environment_secret" "cloudrun_region_secret" {
-  repository      = var.svc.github_repository_name
-  environment     = var.environment_name
-  secret_name     = "cloudrun_region"
-  plaintext_value = var.cloudrun_region
-}
-
-resource "github_actions_environment_secret" "cloudrun_service_secret" {
-  repository      = var.svc.github_repository_name
-  environment     = var.environment_name
-  secret_name     = "cloudrun_service"
-  plaintext_value = module.cloud_run_service.service_name
 }
