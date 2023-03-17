@@ -23,14 +23,16 @@ resource "google_project_service" "services" {
     "serviceusage.googleapis.com",
   ])
 
-  project                    = var.project_id
+  project = var.project_id
+
   service                    = each.value
   disable_on_destroy         = false
   disable_dependent_services = false
 }
 
 resource "google_compute_global_address" "default" {
-  project    = var.project_id
+  project = var.project_id
+
   name       = "${substr(var.name, 0, 50)}-${random_id.default.hex}-address" # 63 character limit
   ip_version = "IPV4"
 
@@ -40,7 +42,8 @@ resource "google_compute_global_address" "default" {
 }
 
 resource "google_compute_global_forwarding_rule" "http" {
-  project               = var.project_id
+  project = var.project_id
+
   name                  = "${substr(var.name, 0, 53)}-${random_id.default.hex}-http" # 63 character limit
   target                = google_compute_target_http_proxy.default.self_link
   ip_address            = google_compute_global_address.default.address
@@ -49,7 +52,8 @@ resource "google_compute_global_forwarding_rule" "http" {
 }
 
 resource "google_compute_global_forwarding_rule" "https" {
-  project               = var.project_id
+  project = var.project_id
+
   name                  = "${substr(var.name, 0, 52)}-${random_id.default.hex}-https" # 63 character limit
   target                = google_compute_target_https_proxy.default.self_link
   ip_address            = google_compute_global_address.default.address
@@ -59,30 +63,32 @@ resource "google_compute_global_forwarding_rule" "https" {
 
 resource "google_compute_managed_ssl_certificate" "default" {
   project = var.project_id
-  name    = "${substr(var.name, 0, 53)}-${random_id.default.hex}-cert" # 63 character limit
+
+  name = "${substr(var.name, 0, 53)}-${random_id.default.hex}-cert" # 63 character limit
 
   managed {
     domains = toset([var.domain])
   }
 
-  lifecycle {
-    create_before_destroy = true
-  }
-
   depends_on = [
     google_project_service.services["compute.googleapis.com"],
   ]
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "google_compute_url_map" "default" {
-  project         = var.project_id
+  project = var.project_id
+
   name            = "${substr(var.name, 0, 50)}-${random_id.default.hex}-url-map" # 63 character limit
   default_service = google_compute_backend_service.default.self_link
 }
 
 resource "google_compute_url_map" "https_redirect" {
   project = var.project_id
-  name    = "${substr(var.name, 0, 40)}-${random_id.default.hex}-https-redirect" # 63 character limit
+
+  name = "${substr(var.name, 0, 40)}-${random_id.default.hex}-https-redirect" # 63 character limit
   default_url_redirect {
     https_redirect         = true
     redirect_response_code = "MOVED_PERMANENTLY_DEFAULT"
@@ -96,13 +102,15 @@ resource "google_compute_url_map" "https_redirect" {
 
 resource "google_compute_target_http_proxy" "default" {
   project = var.project_id
-  name    = "${substr(var.name, 0, 47)}-${random_id.default.hex}-http-proxy" # 63 character limit
+
+  name = "${substr(var.name, 0, 47)}-${random_id.default.hex}-http-proxy" # 63 character limit
 
   url_map = google_compute_url_map.https_redirect.self_link
 }
 
 resource "google_compute_target_https_proxy" "default" {
   project = var.project_id
+
   name    = "${substr(var.name, 0, 46)}-${random_id.default.hex}-https-proxy" # 63 character limit
   url_map = google_compute_url_map.default.self_link
 
@@ -110,7 +118,8 @@ resource "google_compute_target_https_proxy" "default" {
 }
 
 resource "google_compute_region_network_endpoint_group" "default" {
-  project               = var.project_id
+  project = var.project_id
+
   region                = var.region
   name                  = "${substr(var.name, 0, 54)}-${random_id.default.hex}-neg" # 63 character limit
   network_endpoint_type = "SERVERLESS"
@@ -125,7 +134,8 @@ resource "google_compute_region_network_endpoint_group" "default" {
 }
 
 resource "google_compute_backend_service" "default" {
-  project               = var.project_id
+  project = var.project_id
+
   name                  = "${substr(var.name, 0, 50)}-${random_id.default.hex}-backend" # 63 character limit
   load_balancing_scheme = "EXTERNAL"
   description           = "${var.name} backend"
