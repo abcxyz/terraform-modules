@@ -201,6 +201,7 @@ module "github_ci_access_config" {
 
 data "google_project" "serving_project_numbers" {
   for_each   = local.environments
+
   project_id = local.serving_project_ids[each.key]
 }
 
