@@ -22,12 +22,13 @@ locals {
   # attached, for policy reasons. For those users, they'll need to create their GCP projects
   # without a billing account, then follow a manual human process to associate those projects with
   # a billing account. To do this, set billing_account to null. This will create your projects
-  # without an associated billing account, at which point you can ask the necessary human to
-  # associate the billing account.
+  # without an associated billing account, and "terraform apply" will fail after that when it tries
+  # to create other resources that require a billing account. At this point you can ask the
+  # necessary human to associate the billing account.
   #
   # If, on the other hand, you have permission to create a project with an associated billing
   # account, you can set billing_account to a real valueand terraform will work on the first run.
-  # billing_account = "009DE6-A7C95A-2AEE97"
+  # billing_account = "123123-123123-123123"
   billing_account = null
 
   infra_folder   = "1111111111"
@@ -129,27 +130,18 @@ locals {
 # resource "google_project" "infra_project" {
 #   project_id = local.infra_project_id
 #   name = local.infra_project_id
-
+#
 #   folder_id       = local.nonprod_folder
 #   billing_account = local.billing_account
-
-#   lifecycle {
-#     # We expect billing_account association to be done by a human after project creation in the common case.
-#     ignore_changes = [billing_account]
-#   }
+#
 # }
 # resource "google_project" "serving_projects" {
 #   for_each = local.environments
-
+#
+#   project_id      = "${local.trunc_rand_umbrella_name}-${each.key}"
 #   billing_account = local.billing_account
 #   folder_id       = each.value.folder_id
-#   project_id      = "${local.trunc_rand_umbrella_name}-${each.key}"
 #   name            = "${local.trunc_rand_umbrella_name}-${each.key}"
-
-#   lifecycle {
-#     # billing_account association might change after creation, if a human is doing the association between projects and billing accounts.
-#     ignore_changes = [billing_account]
-#   }
 # }
 #
 #### Option 2: use projects created outside of terraform and provide their IDs
@@ -200,7 +192,7 @@ module "github_ci_access_config" {
 }
 
 data "google_project" "serving_project_numbers" {
-  for_each   = local.environments
+  for_each = local.environments
 
   project_id = local.serving_project_ids[each.key]
 }
@@ -301,3 +293,4 @@ module "github_vars" {
   artifact_repository_id       = module.github_ci_access_config.artifact_repository_id
   artifact_repository_location = module.github_ci_access_config.artifact_repository_location
 }
+
