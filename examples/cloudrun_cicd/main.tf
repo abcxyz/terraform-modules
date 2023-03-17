@@ -259,6 +259,7 @@ module "cloud_run_service" {
   for_each = {
     for em in local.envs_microservices : "${em.env_name}-${em.microservice_name}" => em
   }
+
   source = "git::https://github.com/abcxyz/terraform-modules.git//modules/cloud_run?ref=SHA_OR_TAG_HERE"
 
   project_id = local.serving_project_ids[each.value.env_name]
