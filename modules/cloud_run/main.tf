@@ -54,16 +54,18 @@ resource "google_project_service" "services" {
     "stackdriver.googleapis.com",
   ])
 
-  project                    = var.project_id
+  project = var.project_id
+
   service                    = each.value
   disable_on_destroy         = false
   disable_dependent_services = false
 }
 
 resource "google_cloud_run_service" "service" {
+  project = var.project_id
+
   name                       = local.run_service_name
   location                   = var.region
-  project                    = var.project_id
   autogenerate_revision_name = true
 
   metadata {
@@ -135,6 +137,10 @@ resource "google_cloud_run_service" "service" {
     }
   }
 
+  depends_on = [
+    google_project_service.services["run.googleapis.com"],
+    google_secret_manager_secret_iam_member.secrets_accessors_iam,
+  ]
   lifecycle {
     ignore_changes = [
       metadata[0].annotations["client.knative.dev/user-image"],
@@ -157,32 +163,30 @@ resource "google_cloud_run_service" "service" {
       template[0].spec[0].containers[0].image,
     ]
   }
-
-  depends_on = [
-    google_project_service.services["run.googleapis.com"],
-    google_secret_manager_secret_iam_member.secrets_accessors_iam,
-  ]
 }
 
 resource "google_cloud_run_service_iam_binding" "admins" {
+  project = google_cloud_run_service.service.project
+
   location = google_cloud_run_service.service.location
-  project  = google_cloud_run_service.service.project
   service  = google_cloud_run_service.service.name
   role     = "roles/run.admin"
   members  = toset(var.service_iam.admins)
 }
 
 resource "google_cloud_run_service_iam_binding" "invokers" {
+  project = google_cloud_run_service.service.project
+
   location = google_cloud_run_service.service.location
-  project  = google_cloud_run_service.service.project
   service  = google_cloud_run_service.service.name
   role     = "roles/run.invoker"
   members  = toset(var.service_iam.invokers)
 }
 
 resource "google_cloud_run_service_iam_binding" "developers" {
+  project = google_cloud_run_service.service.project
+
   location = google_cloud_run_service.service.location
-  project  = google_cloud_run_service.service.project
   service  = google_cloud_run_service.service.name
   role     = "roles/run.developer"
   members  = toset(var.service_iam.developers)
@@ -197,8 +201,9 @@ resource "google_project_iam_member" "run_observability_iam" {
   ])
 
   project = var.project_id
-  role    = each.key
-  member  = "serviceAccount:${var.service_account_email}"
+
+  role   = each.key
+  member = "serviceAccount:${var.service_account_email}"
 
   depends_on = [
     google_project_service.services["iam.googleapis.com"],
@@ -209,7 +214,8 @@ resource "google_project_iam_member" "run_observability_iam" {
 resource "google_secret_manager_secret" "secrets" {
   for_each = toset(var.secrets)
 
-  project   = var.project_id
+  project = var.project_id
+
   secret_id = each.value
   replication {
     automatic = true
@@ -238,7 +244,8 @@ resource "google_secret_manager_secret_version" "secrets_default_version" {
 resource "google_secret_manager_secret_iam_member" "secrets_accessors_iam" {
   for_each = toset(var.secrets)
 
-  project   = var.project_id
+  project = var.project_id
+
   secret_id = google_secret_manager_secret.secrets[each.key].id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${var.service_account_email}"

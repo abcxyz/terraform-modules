@@ -28,7 +28,8 @@ resource "google_project_service" "services" {
     "sts.googleapis.com",
   ])
 
-  project                    = var.project_id
+  project = var.project_id
+
   service                    = each.value
   disable_on_destroy         = false
   disable_dependent_services = false
@@ -36,8 +37,9 @@ resource "google_project_service" "services" {
 
 # Artifact Registry
 resource "google_artifact_registry_repository" "artifact_repository" {
+  project = var.project_id
+
   location      = var.registry_location
-  project       = var.project_id
   repository_id = var.registry_repository_id
   description   = "Container registry for docker images."
   format        = "DOCKER"
@@ -48,7 +50,8 @@ resource "google_artifact_registry_repository" "artifact_repository" {
 }
 
 resource "google_artifact_registry_repository_iam_binding" "ci_service_account_iam" {
-  project    = google_artifact_registry_repository.artifact_repository.project
+  project = google_artifact_registry_repository.artifact_repository.project
+
   location   = google_artifact_registry_repository.artifact_repository.location
   repository = google_artifact_registry_repository.artifact_repository.name
   role       = "roles/artifactregistry.repoAdmin"
@@ -57,7 +60,8 @@ resource "google_artifact_registry_repository_iam_binding" "ci_service_account_i
 
 # Workload Identity Federation
 resource "google_iam_workload_identity_pool" "github_pool" {
-  project                   = var.project_id
+  project = var.project_id
+
   workload_identity_pool_id = "github-pool-${random_id.default.hex}"
   display_name              = "GitHub WIF Pool"
   description               = "Identity pool for CI environment"
@@ -68,7 +72,8 @@ resource "google_iam_workload_identity_pool" "github_pool" {
 }
 
 resource "google_iam_workload_identity_pool_provider" "github_provider" {
-  project                            = var.project_id
+  project = var.project_id
+
   workload_identity_pool_id          = google_iam_workload_identity_pool.github_pool.workload_identity_pool_id
   workload_identity_pool_provider_id = "github-provider"
   display_name                       = "GitHub WIF Provider"
@@ -101,7 +106,8 @@ resource "google_iam_workload_identity_pool_provider" "github_provider" {
 }
 
 resource "google_service_account" "ci_service_account" {
-  project      = var.project_id
+  project = var.project_id
+
   account_id   = "${substr(var.name, 0, 19)}-${random_id.default.hex}-ci-sa" # 30 character limit
   display_name = "${var.name} CI Service Account"
 }
