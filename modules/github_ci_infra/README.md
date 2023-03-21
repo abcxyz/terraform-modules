@@ -9,7 +9,7 @@ module "github_ci_infra" {
   source = "git::https://github.com/abcxyz/terraform-modules.git//modules/github_ci_infra?ref=SHA_OR_TAG"
 
   project_id           = "my-project-id"
-  service_account_name = "project-name"
+  project_name         = "my-project-name"
   github_owner_id      = 123456
   github_repository_id = 123456789
 }

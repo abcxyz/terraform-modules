@@ -17,11 +17,11 @@ variable "project_id" {
   description = "The Google Cloud project ID."
 }
 
-variable "service_account_name" {
+variable "project_name" {
   type        = string
   description = "The name of this project."
   validation {
-    condition     = can(regex("^[a-z][0-9a-z-]+[0-9a-z]$", var.service_account_name))
+    condition     = can(regex("^[a-z][0-9a-z-]+[0-9a-z]$", var.project_name))
     error_message = "Name can only contain lowercase letters, numbers, hyphens(-) and must start with letter. Name will be truncated and suffixed with at random string if it exceeds requirements for a given resource."
   }
 }
