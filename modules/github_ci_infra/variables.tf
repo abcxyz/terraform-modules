@@ -17,7 +17,7 @@ variable "project_id" {
   description = "The Google Cloud project ID."
 }
 
-variable "name" {
+variable "service_account_name" {
   type        = string
   description = "The name of this project."
   validation {
