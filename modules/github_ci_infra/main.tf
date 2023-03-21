@@ -108,8 +108,8 @@ resource "google_iam_workload_identity_pool_provider" "github_provider" {
 resource "google_service_account" "ci_service_account" {
   project = var.project_id
 
-  account_id   = "${substr(var.name, 0, 19)}-${random_id.default.hex}-ci-sa" # 30 character limit
-  display_name = "${var.name} CI Service Account"
+  account_id   = "${substr(var.service_account_name, 0, 19)}-${random_id.default.hex}-ci-sa" # 30 character limit
+  display_name = "${var.service_account_name} CI Service Account"
 }
 
 resource "google_service_account_iam_member" "wif_github_iam" {
