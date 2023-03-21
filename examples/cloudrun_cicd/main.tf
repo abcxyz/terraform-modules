@@ -27,7 +27,7 @@ locals {
   # necessary human to associate the billing account.
   #
   # If, on the other hand, you have permission to create a project with an associated billing
-  # account, you can set billing_account to a real valueand terraform will work on the first run.
+  # account, you can set billing_account to a real value and terraform will work on the first run.
   # billing_account = "123123-123123-123123"
   billing_account = null
 
@@ -58,6 +58,16 @@ locals {
     "dev" : {
       folder_id       = local.nonprod_folder
       cloudrun_region = "us-west1"
+      github = {
+        reviewers = {
+          users = null
+          teams = null
+        }
+        deployment_branch_policy = {
+          protected_branches     = false
+          custom_branch_policies = false
+        }
+      }
       microservices = {
         "hello-svc" : {
           min_cloudrun_instances = 1
@@ -76,6 +86,16 @@ locals {
     "staging" : {
       folder_id       = local.nonprod_folder
       cloudrun_region = "us-west1"
+      github = {
+        reviewers = {
+          users = null
+          teams = null
+        }
+        deployment_branch_policy = {
+          protected_branches     = false
+          custom_branch_policies = false
+        }
+      }
       microservices = {
         "hello-svc" : {
           min_cloudrun_instances = 1
@@ -92,6 +112,17 @@ locals {
     "prod" : {
       folder_id       = local.prod_folder
       cloudrun_region = "us-central1"
+      github = {
+        reviewers = {
+          users = [111111, 222222]
+          teams = [33333333, 44444444]
+        }
+        deployment_branch_policy = {
+          # Only one of these two may be true
+          protected_branches     = true
+          custom_branch_policies = false
+        }
+      }
       microservices = {
         "hello-svc" : {
           min_cloudrun_instances = 3
@@ -157,7 +188,7 @@ locals {
 
 locals {
   # Create a list that is the cartesian product of environments and APIs, so we can enable each API on each project.
-  # Produces a list of object each having the two fields below.
+  # Produces a list of objects each having the two fields below.
   envs_apis_cross_join = flatten([
     for env_name, env in local.environments : [
       for api in local.serving_project_services : {
@@ -294,3 +325,27 @@ module "github_vars" {
   artifact_repository_location = module.github_ci_access_config.artifact_repository_location
 }
 
+resource "github_repository_environment" "default" {
+  for_each = local.environments
+
+  environment = each.key
+  repository  = local.github_repository_name
+
+  reviewers {
+    users = each.value.github.reviewers.users
+    teams = each.value.github.reviewers.teams
+  }
+
+  # Because of excessive validation logic on GitHub's side, we cannot specify a
+  # deployment_branch_policy where both booleans are false, because it will be rejected with HTTP
+  # 422. To get the behavior where neither protected_branches nor custom_branch_policies are
+  # enabled, we have to omit the block entirely. We use "dynamic" to make the presence of the block
+  # conditioned on one of the two booleans being true.
+  dynamic "deployment_branch_policy" {
+    for_each = each.value.github.deployment_branch_policy.protected_branches || each.value.github.deployment_branch_policy.custom_branch_policies ? [1] : []
+    content {
+      protected_branches     = each.value.github.deployment_branch_policy.protected_branches
+      custom_branch_policies = each.value.github.deployment_branch_policy.custom_branch_policies
+    }
+  }
+}
