@@ -313,18 +313,6 @@ resource "google_service_account_iam_member" "impersonate" {
   member             = module.github_ci_access_config.service_account_member
 }
 
-# Set repository-level secrets on the GitHub repo that can be used by CI/CD workflows.
-module "github_vars" {
-  source = "git::https://github.com/abcxyz/terraform-modules/modules/github_cicd_workflow_vars?ref=SHA_OR_TAG_HERE"
-
-  infra_project_id             = local.infra_project_id
-  github_repository_name       = local.github_repository_name
-  wif_provider_name            = module.github_ci_access_config.wif_provider_name
-  service_account_email        = module.github_ci_access_config.service_account_email
-  artifact_repository_id       = module.github_ci_access_config.artifact_repository_id
-  artifact_repository_location = module.github_ci_access_config.artifact_repository_location
-}
-
 resource "github_repository_environment" "default" {
   for_each = local.environments
 
@@ -348,4 +336,21 @@ resource "github_repository_environment" "default" {
       custom_branch_policies = each.value.github.deployment_branch_policy.custom_branch_policies
     }
   }
+}
+
+# Set repository-level secrets on the GitHub repo that can be used by CI/CD workflows.
+module "github_vars" {
+  source = "git::https://github.com/abcxyz/terraform-modules/modules/github_cicd_workflow_vars?ref=SHA_OR_TAG_HERE"
+
+  infra_project_id             = local.infra_project_id
+  github_repository_name       = local.github_repository_name
+  wif_provider_name            = module.github_ci_access_config.wif_provider_name
+  service_account_email        = module.github_ci_access_config.service_account_email
+  artifact_repository_id       = module.github_ci_access_config.artifact_repository_id
+  artifact_repository_location = module.github_ci_access_config.artifact_repository_location
+  environment_projects         = local.serving_project_ids
+
+  depends_on = [
+    github_repository_environment.default
+  ]
 }
