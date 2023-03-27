@@ -42,3 +42,7 @@ variable "artifact_repository_location" {
   description = "Location of the artifact registry repository. Either a region name or a multi-regional location name. E.g. 'us', 'us-west1'"
 }
 
+variable "environment_projects" {
+  type        = map(string)
+  description = "A map where the keys are GitHub environment names and the values are the GCP project IDs where that environment runs."
+}
