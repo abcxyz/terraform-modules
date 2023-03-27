@@ -12,32 +12,41 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-resource "github_actions_secret" "wif_provider_secret" {
-  repository      = var.github_repository_name # Excludes org name, which is implied by the access token.
-  secret_name     = "wif_provider"
-  plaintext_value = var.wif_provider_name
+resource "github_actions_variable" "wif_provider" {
+  repository    = var.github_repository_name # Excludes org name, which is implied by the access token.
+  variable_name = "wif_provider"
+  value         = var.wif_provider_name
 }
 
-resource "github_actions_secret" "wif_service_account_secret" {
-  repository      = var.github_repository_name
-  secret_name     = "wif_service_account"
-  plaintext_value = var.service_account_email
+resource "github_actions_variable" "wif_service_account" {
+  repository    = var.github_repository_name
+  variable_name = "wif_service_account"
+  value         = var.service_account_email
 }
 
-resource "github_actions_secret" "infra_project_id_secret" {
-  repository      = var.github_repository_name
-  secret_name     = "infra_project_id"
-  plaintext_value = var.infra_project_id
+resource "github_actions_variable" "infra_project_id" {
+  repository    = var.github_repository_name
+  variable_name = "infra_project_id"
+  value         = var.infra_project_id
 }
 
-resource "github_actions_secret" "gar_location_secret" {
-  repository      = var.github_repository_name
-  secret_name     = "gar_location"
-  plaintext_value = var.artifact_repository_location
+resource "github_actions_variable" "gar_location" {
+  repository    = var.github_repository_name
+  variable_name = "gar_location"
+  value         = var.artifact_repository_location
 }
 
-resource "github_actions_secret" "gar_repo_id_secret" {
-  repository      = var.github_repository_name
-  secret_name     = "gar_repo_id"
-  plaintext_value = var.artifact_repository_id
+resource "github_actions_variable" "gar_repo_id" {
+  repository    = var.github_repository_name
+  variable_name = "gar_repo_id"
+  value         = var.artifact_repository_id
+}
+
+resource "github_actions_environment_variable" "project_id_for_env" {
+  for_each = var.environment_projects
+
+  repository    = var.github_repository_name
+  variable_name = "project_id_for_env"
+  environment   = each.key
+  value         = each.value
 }
