@@ -12,7 +12,7 @@ resource "google_service_account" "run_service_account" {
 }
 
 module "cloud_run" {
-  source                    = "https://github.com/abcxyz/infra/terraform/modules/cloud_run"
+  source                    = "git::https://github.com/abcxyz/terraform-modules.git//modules/cloud_run?ref=SHA_OR_TAG"
   project_id                = "my-project-id"
   name                      = "project-name"
   secrets                   = ["app-secret", "app-file-secret"]
