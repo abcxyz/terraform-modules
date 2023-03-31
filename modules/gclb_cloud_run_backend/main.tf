@@ -16,6 +16,14 @@ resource "random_id" "default" {
   byte_length = 2
 }
 
+resource "random_id" "cert" {
+  keepers = {
+    domains = join(",", var.domains)
+  }
+
+  byte_length = 2
+}
+
 resource "google_project_service" "services" {
   for_each = toset([
     "cloudresourcemanager.googleapis.com",
@@ -54,7 +62,7 @@ resource "google_compute_global_forwarding_rule" "http" {
 resource "google_compute_global_forwarding_rule" "https" {
   project = var.project_id
 
-  name                  = "${substr(var.name, 0, 52)}-${random_id.default.hex}-https" # 63 character limit
+  name                  = "${substr(var.name, 0, 52)}-${random_id.cert.hex}-https" # 63 character limit
   target                = google_compute_target_https_proxy.default.self_link
   ip_address            = google_compute_global_address.default.address
   port_range            = "443"
@@ -64,10 +72,10 @@ resource "google_compute_global_forwarding_rule" "https" {
 resource "google_compute_managed_ssl_certificate" "default" {
   project = var.project_id
 
-  name = "${substr(var.name, 0, 53)}-${random_id.default.hex}-cert" # 63 character limit
+  name = "${substr(var.name, 0, 53)}-${random_id.cert.hex}-cert" # 63 character limit
 
   managed {
-    domains = toset([var.domain])
+    domains = toset(var.domains)
   }
 
   depends_on = [
@@ -77,7 +85,6 @@ resource "google_compute_managed_ssl_certificate" "default" {
     create_before_destroy = true
   }
 }
-
 resource "google_compute_url_map" "default" {
   project = var.project_id
 
@@ -111,7 +118,7 @@ resource "google_compute_target_http_proxy" "default" {
 resource "google_compute_target_https_proxy" "default" {
   project = var.project_id
 
-  name    = "${substr(var.name, 0, 46)}-${random_id.default.hex}-https-proxy" # 63 character limit
+  name    = "${substr(var.name, 0, 46)}-${random_id.cert.hex}-https-proxy" # 63 character limit
   url_map = google_compute_url_map.default.self_link
 
   ssl_certificates = [google_compute_managed_ssl_certificate.default.self_link]

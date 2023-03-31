@@ -37,9 +37,9 @@ variable "run_service_name" {
   description = "The name of the Cloud Run service to the compute backend serverless network endpoint group."
 }
 
-variable "domain" {
-  type        = string
-  description = "Domain name to use for the HTTPS Global Load Balancer for the Cloud Run service (e.g. my-project.e2e.tycho.joonix.net)."
+variable "domains" {
+  type        = list(string)
+  description = "Domain names to use for the HTTPS Global Load Balancer for the Cloud Run service (e.g. [\"my-project.e2e.tycho.joonix.net\"])."
 }
 
 variable "security_policy" {
