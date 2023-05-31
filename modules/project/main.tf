@@ -8,8 +8,15 @@ locals {
 
   default_project_services = [
     "cloudresourcemanager.googleapis.com",
+    "iam.googleapis.com",
     "serviceusage.googleapis.com",
   ]
+
+  project_iam_pairs = toset(flatten([
+    for m, roles in var.project_iam : [
+      for r in roles : { role : r, member : m }
+    ]
+  ]))
 }
 
 resource "null_resource" "project_id_validation" {
@@ -45,6 +52,24 @@ resource "google_project_service" "default" {
   service                    = each.value
   disable_on_destroy         = false
   disable_dependent_services = false
+}
+
+resource "google_project_iam_member" "default" {
+  for_each = {
+    for i in local.project_iam_pairs : "${i.role}-${i.member}" => {
+      role   = i.role
+      member = i.member
+    }
+  }
+
+  project = google_project.default.project_id
+
+  role   = each.value.role
+  member = each.value.member
+
+  depends_on = [
+    google_project_service.default["iam.googleapis.com"]
+  ]
 }
 
 resource "google_resource_manager_lien" "default" {

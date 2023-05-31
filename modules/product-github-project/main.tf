@@ -33,6 +33,7 @@ module "projects" {
   bucket_root_prefix = var.bucket_root_prefix
   environments       = var.environments
   billing_account    = var.billing_account
+  project_iam        = var.project_iam
   project_services   = var.project_services
 }
 

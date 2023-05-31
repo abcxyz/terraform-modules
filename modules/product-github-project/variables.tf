@@ -18,6 +18,13 @@ variable "project_services" {
   default     = []
 }
 
+variable "project_iam" {
+  description = "Member identities for project IAM, in {MEMBER => [ROLES]} format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
 variable "environments" {
   description = "The product environments to create this project in."
   type        = map(string)

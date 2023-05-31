@@ -23,6 +23,13 @@ variable "project_services" {
   default     = []
 }
 
+variable "project_iam" {
+  description = "Member identities for project IAM, in {MEMBER => [ROLES]} format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
 variable "enable_suffix" {
   description = "Append a random 6 character suffix to the project ID (default: true)."
   type        = bool
