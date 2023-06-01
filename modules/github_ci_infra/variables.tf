@@ -26,6 +26,26 @@ variable "name" {
   }
 }
 
+variable "wif_pool_name" {
+  type        = string
+  description = "The Workload Identity Federation pool name."
+  default     = "github-pool"
+  validation {
+    condition     = length(var.wif_pool_name) <= 32
+    error_message = "wif_pool_name must be 32 characters or less."
+  }
+}
+
+variable "wif_provider_name" {
+  type        = string
+  description = "The Workload Identity Federation provider name."
+  default     = "github-provider"
+  validation {
+    condition     = length(var.wif_provider_name) <= 32
+    error_message = "wif_provider_name must be 32 characters or less."
+  }
+}
+
 variable "github_owner_id" {
   type        = number
   description = "The GitHub ID of the owner of the repository whose workflows will be granted access to the WIF pool (i.e. an organization ID or user ID)."
