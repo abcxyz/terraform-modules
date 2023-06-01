@@ -49,6 +49,8 @@ resource "google_tags_tag_binding" "wif_github" {
 # creating these resources consistently succeed. We will wait 45s for
 # IAM propagation.
 resource "time_sleep" "wait_45s" {
+  for_each = module.projects.environments
+
   create_duration = "45s"
 
   depends_on = [module.projects]
