@@ -8,6 +8,7 @@ locals {
 
   default_project_services = [
     "cloudresourcemanager.googleapis.com",
+    "iam.googleapis.com",
     "serviceusage.googleapis.com",
   ]
 }
