@@ -63,8 +63,8 @@ resource "google_iam_workload_identity_pool" "github_pool" {
   project = var.project_id
 
   workload_identity_pool_id = "github-pool-${random_id.default.hex}"
-  display_name              = "GitHub WIF Pool"
-  description               = "Identity pool for CI environment"
+  display_name              = var.wif_pool_name
+  description               = "Identity pool for GitHub repo ${var.github_repository_id} CI environment"
 
   depends_on = [
     google_project_service.services["iam.googleapis.com"],
@@ -76,7 +76,7 @@ resource "google_iam_workload_identity_pool_provider" "github_provider" {
 
   workload_identity_pool_id          = google_iam_workload_identity_pool.github_pool.workload_identity_pool_id
   workload_identity_pool_provider_id = "github-provider"
-  display_name                       = "GitHub WIF Provider"
+  display_name                       = var.wif_provider_name
   description                        = "GitHub OIDC identity provider for GitHub repo ${var.github_repository_id} CI environment"
   attribute_mapping = {
     "google.subject" : "assertion.sub"
