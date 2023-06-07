@@ -37,5 +37,10 @@ module "cloud_run" {
 
   invokers = ["user:test-account-group@google.com"]
   developers = [module.github_ci.service_account_email]
+  
+  # Connecting cloud sql
+  # revision_annotations = {
+  #   "run.googleapis.com/cloudsql-instances" = google_sql_database_instance.mysql_instance.connection_name
+  # }
 }
 ```

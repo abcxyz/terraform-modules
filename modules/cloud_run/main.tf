@@ -15,12 +15,15 @@
 locals {
   run_service_name = "${substr(var.name, 0, 58)}-${random_id.default.hex}" # 63 character limit
 
-  default_run_revision_annotations = {
-    "autoscaling.knative.dev/minScale" : var.min_instances,
-    "autoscaling.knative.dev/maxScale" : var.max_instances,
-    "run.googleapis.com/sandbox" : "gvisor",
-    "run.googleapis.com/execution-environment" : var.execution_environment
-  }
+  run_revision_annotations =merge (
+    {
+      "autoscaling.knative.dev/minScale" : var.min_instances,
+      "autoscaling.knative.dev/maxScale" : var.max_instances,
+      "run.googleapis.com/sandbox" : "gvisor",
+      "run.googleapis.com/execution-environment" : var.execution_environment
+    },
+    var.revision_annotations,
+  )
 
   default_run_service_annotations = {
     "run.googleapis.com/ingress" : var.ingress
@@ -133,7 +136,7 @@ resource "google_cloud_run_service" "service" {
     }
 
     metadata {
-      annotations = local.default_run_revision_annotations
+      annotations = local.run_revision_annotations
     }
   }
 
