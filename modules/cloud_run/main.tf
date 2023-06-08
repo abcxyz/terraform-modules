@@ -22,7 +22,7 @@ locals {
       "run.googleapis.com/sandbox" : "gvisor",
       "run.googleapis.com/execution-environment" : var.execution_environment
     },
-    var.revision_annotations,
+    var.addl_revision_annotations,
   )
 
   default_run_service_annotations = {

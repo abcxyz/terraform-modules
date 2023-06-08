@@ -142,7 +142,7 @@ variable "args" {
   description = "Arguments to the cloud run container's entrypoint."
 }
 
-variable "revision_annotations" {
+variable "addl_revision_annotations" {
   type        = map(string)
   default     = {}
   description = "Annotations to add to the template.metadata.annotations field."
