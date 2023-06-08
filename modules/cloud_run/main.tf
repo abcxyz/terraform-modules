@@ -15,32 +15,22 @@
 locals {
   run_service_name = "${substr(var.name, 0, 58)}-${random_id.default.hex}" # 63 character limit
 
-  run_revision_annotations = merge(
-    {
-      "autoscaling.knative.dev/minScale" : var.min_instances,
-      "autoscaling.knative.dev/maxScale" : var.max_instances,
-      "run.googleapis.com/sandbox" : "gvisor",
-      "run.googleapis.com/execution-environment" : var.execution_environment
-    },
-    var.additional_revision_annotations,
-  )
+  default_run_revision_annotations = {
+    "autoscaling.knative.dev/minScale" : var.min_instances,
+    "autoscaling.knative.dev/maxScale" : var.max_instances,
+    "run.googleapis.com/sandbox" : "gvisor",
+    "run.googleapis.com/execution-environment" : var.execution_environment
+  }
 
   default_run_service_annotations = {
     "run.googleapis.com/ingress" : var.ingress
   }
 
-  run_envvars = merge(
-    {}, # defaults, currently none
-    var.envvars
-  )
-  run_secret_envvars = merge(
-    {}, # defaults, currently none
-    var.secret_envvars,
-  )
-  run_secret_volumes = merge(
-    {}, # defaults, currently none
-    var.secret_volumes,
-  )
+  default_run_envvars = {}
+
+  default_run_secret_envvars = {}
+
+  default_run_secret_volumes = {}
 }
 
 resource "random_id" "default" {
@@ -89,7 +79,7 @@ resource "google_cloud_run_service" "service" {
         }
 
         dynamic "env" {
-          for_each = local.run_envvars
+          for_each = merge(local.default_run_envvars, var.envvars)
 
           content {
             name  = env.key
@@ -98,7 +88,7 @@ resource "google_cloud_run_service" "service" {
         }
 
         dynamic "env" {
-          for_each = local.run_secret_envvars
+          for_each = merge(local.default_run_secret_envvars, var.secret_envvars)
 
           content {
             name = env.key
@@ -112,7 +102,7 @@ resource "google_cloud_run_service" "service" {
         }
 
         dynamic "volume_mounts" {
-          for_each = local.run_secret_volumes
+          for_each = merge(local.default_run_secret_volumes, var.secret_volumes)
           content {
             mount_path = volume_mounts.key
             name       = volume_mounts.value.name
@@ -121,7 +111,7 @@ resource "google_cloud_run_service" "service" {
       }
 
       dynamic "volumes" {
-        for_each = local.run_secret_volumes
+        for_each = merge(local.default_run_secret_volumes, var.secret_volumes)
         content {
           name = volumes.value.name
           secret {
@@ -136,7 +126,9 @@ resource "google_cloud_run_service" "service" {
     }
 
     metadata {
-      annotations = local.run_revision_annotations
+      annotations = merge(local.default_run_revision_annotations,
+        var.additional_revision_annotations,
+      )
     }
   }
 
