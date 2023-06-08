@@ -143,7 +143,7 @@ variable "args" {
 }
 
 variable "revision_annotations" {
-  type = map(string)
-  default = {}
+  type        = map(string)
+  default     = {}
   description = "Annotations to add to the template.metadata.annotations field."
 }

@@ -15,7 +15,7 @@
 locals {
   run_service_name = "${substr(var.name, 0, 58)}-${random_id.default.hex}" # 63 character limit
 
-  run_revision_annotations =merge (
+  run_revision_annotations = merge(
     {
       "autoscaling.knative.dev/minScale" : var.min_instances,
       "autoscaling.knative.dev/maxScale" : var.max_instances,
