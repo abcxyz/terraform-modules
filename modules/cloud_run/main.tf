@@ -80,6 +80,14 @@ resource "google_cloud_run_service" "service" {
         image = var.image
         args  = var.args
 
+        // TODO: what is the best way to expose h2c as an option to users? Allow arbitrary port declarations?
+        // # Enable HTTP/2
+        // # https://cloud.google.com/run/docs/configuring/http2
+        // ports {
+        //   name           = "h2c"
+        //   container_port = 8080
+        //}
+
         resources {
           requests = var.resources.requests
           limits   = var.resources.limits
