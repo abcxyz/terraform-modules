@@ -39,8 +39,8 @@ module "cloud_run" {
   developers = [module.github_ci.service_account_email]
   
   # Connecting cloud sql -- public ip version, not recommended due to scaling issues
+  # max_instances needs to be set low enough to avoid scaling issues
   # revision_annotations = {
-  #   "autoscaling.knative.dev/maxScale" = "1000"
   #   "run.googleapis.com/cloudsql-instances" = google_sql_database_instance.mysql_instance.connection_name
   # }
 }
