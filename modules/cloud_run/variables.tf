@@ -160,4 +160,5 @@ variable "startup_probe" {
     }))
   })
   default = {}
+  description = "Optional startup probe configuration"
 }
