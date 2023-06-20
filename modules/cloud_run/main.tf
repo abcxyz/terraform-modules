@@ -81,7 +81,13 @@ resource "google_cloud_run_service" "service" {
             timeout_seconds = var.startup_probe.timeout_seconds
             period_seconds = var.startup_probe.period_seconds
             failure_threshold = var.startup_probe.failure_threshold
-            http_get = var.startup_probe.http_get
+
+            dynamic "http_get" {
+              for_each = var.startup_probe.http_get == {} ? toset([]) : toset([1])
+
+              path = var.startup_probe.http_get.path
+              port = var.startup_probe.http_get.port
+            }
           }
         }
 
