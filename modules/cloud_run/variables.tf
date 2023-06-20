@@ -154,10 +154,10 @@ variable "startup_probe" {
     timeout_seconds = number
     period_seconds = number
     failure_threshold = number
-    http_get = object({
+    http_get = optional(object({
       path = optional(string)
       port = optional(number)
-    })
+    }))
   })
   default = {
     initial_delay_seconds = 0
