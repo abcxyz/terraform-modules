@@ -80,7 +80,7 @@ resource "google_cloud_run_service" "service" {
           failure_threshold     = var.startup_probe.failure_threshold
 
           dynamic "http_get" {
-            count = var.startup_probe.http_get != null ? 1 : 0
+            for_each = var.startup_probe.http_get != null ? [1] : [0]
 
             content {
               path = var.startup_probe.http_get.path
