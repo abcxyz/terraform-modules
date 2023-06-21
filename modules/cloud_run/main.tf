@@ -88,6 +88,16 @@ resource "google_cloud_run_service" "service" {
               content {
                 path = var.startup_probe.http_get.path
                 port = var.startup_probe.http_get.port
+
+                dynamic "http_headers" {
+                  for_each = (
+                    var.startup_probe.http_get.http_headers
+                  )
+                  content {
+                    name  = http_headers.key
+                    value = http_headers.value
+                  }
+                }
               }
             }
           }

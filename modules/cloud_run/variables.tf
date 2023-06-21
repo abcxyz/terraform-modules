@@ -155,8 +155,9 @@ variable "startup_probe" {
     period_seconds        = optional(number, 10)
     failure_threshold     = optional(number, 3)
     http_get = optional(object({
-      path = optional(string)
-      port = optional(number)
+      http_headers = optional(map(string), {})
+      path         = optional(string)
+      port         = optional(number)
     }), null)
   })
   default     = null
