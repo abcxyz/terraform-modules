@@ -157,8 +157,8 @@ variable "startup_probe" {
     http_get = optional(object({
       path = optional(string)
       port = optional(number)
-    }))
+    }), null)
   })
-  default = {}
+  default = null
   description = "Optional startup probe configuration"
 }
