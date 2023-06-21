@@ -85,8 +85,10 @@ resource "google_cloud_run_service" "service" {
             dynamic "http_get" {
               for_each = var.startup_probe.http_get ? toset([1]) : toset([])
 
-              path = var.startup_probe.http_get.path
-              port = var.startup_probe.http_get.port
+              content {
+                path = var.startup_probe.http_get.path
+                port = var.startup_probe.http_get.port
+              }
             }
           }
         }
