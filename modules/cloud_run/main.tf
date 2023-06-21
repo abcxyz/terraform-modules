@@ -74,7 +74,7 @@ resource "google_cloud_run_service" "service" {
         args  = var.args
 
         dynamic "startup_probe" {
-          for_each = var.startup_probe ? toset([]) : toset([1])
+          for_each = var.startup_probe ? toset([1]) : toset([])
 
           content {
             initial_delay_seconds = var.startup_probe.initial_delay_seconds
@@ -83,7 +83,7 @@ resource "google_cloud_run_service" "service" {
             failure_threshold = var.startup_probe.failure_threshold
 
             dynamic "http_get" {
-              for_each = var.startup_probe.http_get ? toset([]) : toset([1])
+              for_each = var.startup_probe.http_get ? toset([1]) : toset([])
 
               path = var.startup_probe.http_get.path
               port = var.startup_probe.http_get.port
