@@ -104,6 +104,36 @@ resource "google_cloud_run_service" "service" {
           }
         }
 
+        dynamic "liveness_probe" {
+          for_each = var.liveness_probe == null ? [] : [""]
+
+          content {
+            initial_delay_seconds = var.liveness_probe.initial_delay_seconds
+            timeout_seconds       = var.liveness_probe.timeout_seconds
+            period_seconds        = var.liveness_probe.period_seconds
+            failure_threshold     = var.liveness_probe.failure_threshold
+
+            dynamic "http_get" {
+              for_each = var.liveness_probe.http_get == null ? [] : [""]
+
+              content {
+                path = var.liveness_probe.http_get.path
+                port = var.liveness_probe.http_get.port
+
+                dynamic "http_headers" {
+                  for_each = (
+                    var.liveness_probe.http_get.http_headers
+                  )
+                  content {
+                    name  = http_headers.key
+                    value = http_headers.value
+                  }
+                }
+              }
+            }
+          }
+        }
+
         resources {
           requests = var.resources.requests
           limits   = var.resources.limits
