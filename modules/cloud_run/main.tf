@@ -73,22 +73,18 @@ resource "google_cloud_run_service" "service" {
         image = var.image
         args  = var.args
 
-        dynamic "startup_probe" {
-          count = var.startup_probe != null ? 1 : 0
+        startup_probe {
+          initial_delay_seconds = var.startup_probe.initial_delay_seconds
+          timeout_seconds       = var.startup_probe.timeout_seconds
+          period_seconds        = var.startup_probe.period_seconds
+          failure_threshold     = var.startup_probe.failure_threshold
 
-          content {
-            initial_delay_seconds = var.startup_probe.initial_delay_seconds
-            timeout_seconds       = var.startup_probe.timeout_seconds
-            period_seconds        = var.startup_probe.period_seconds
-            failure_threshold     = var.startup_probe.failure_threshold
+          dynamic "http_get" {
+            count = var.startup_probe.http_get != null ? 1 : 0
 
-            dynamic "http_get" {
-              count = var.startup_probe.http_get != null ? 1 : 0
-
-              content {
-                path = var.startup_probe.http_get.path
-                port = var.startup_probe.http_get.port
-              }
+            content {
+              path = var.startup_probe.http_get.path
+              port = var.startup_probe.http_get.port
             }
           }
         }
