@@ -163,3 +163,19 @@ variable "startup_probe" {
   default     = null
   description = "Optional startup probe configuration"
 }
+
+variable "liveness_probe" {
+  type = object({
+    initial_delay_seconds = optional(number, 0)
+    timeout_seconds       = optional(number, 1)
+    period_seconds        = optional(number, 10)
+    failure_threshold     = optional(number, 3)
+    http_get = optional(object({
+      http_headers = optional(map(string), {})
+      path         = optional(string)
+      port         = optional(number)
+    }), null)
+  })
+  default     = null
+  description = "Optional liveness probe configuration"
+}
