@@ -151,14 +151,14 @@ variable "additional_revision_annotations" {
 variable "startup_probe" {
   type = object({
     initial_delay_seconds = optional(number)
-    timeout_seconds = optional(number)
-    period_seconds = optional(number)
-    failure_threshold = optional(number)
+    timeout_seconds       = optional(number)
+    period_seconds        = optional(number)
+    failure_threshold     = optional(number)
     http_get = optional(object({
       path = optional(string)
       port = optional(number)
     }), null)
   })
-  default = null
+  default     = null
   description = "Optional startup probe configuration"
 }
