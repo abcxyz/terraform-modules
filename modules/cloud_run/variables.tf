@@ -159,5 +159,6 @@ variable "startup_probe" {
       port = optional(number)
     }), null)
   })
+  default     = {}
   description = "Optional startup probe configuration"
 }
