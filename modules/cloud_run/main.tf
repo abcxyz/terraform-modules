@@ -73,6 +73,7 @@ resource "google_cloud_run_service" "service" {
         image = var.image
         args  = var.args
 
+        # TODO: Implement tcp_socket and grpc configuration blocks
         dynamic "startup_probe" {
           for_each = var.startup_probe == null ? [] : [""]
 
