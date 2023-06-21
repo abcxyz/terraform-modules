@@ -147,3 +147,19 @@ variable "additional_revision_annotations" {
   default     = {}
   description = "Annotations to add to the template.metadata.annotations field."
 }
+
+variable "startup_probe" {
+  type = object({
+    initial_delay_seconds = optional(number, 0)
+    timeout_seconds       = optional(number, 1)
+    period_seconds        = optional(number, 10)
+    failure_threshold     = optional(number, 3)
+    http_get = optional(object({
+      http_headers = optional(map(string), {})
+      path         = optional(string)
+      port         = optional(number)
+    }), null)
+  })
+  default     = null
+  description = "Optional startup probe configuration"
+}

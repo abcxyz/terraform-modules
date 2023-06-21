@@ -73,6 +73,37 @@ resource "google_cloud_run_service" "service" {
         image = var.image
         args  = var.args
 
+        # TODO: Implement tcp_socket and grpc configuration blocks
+        dynamic "startup_probe" {
+          for_each = var.startup_probe == null ? [] : [""]
+
+          content {
+            initial_delay_seconds = var.startup_probe.initial_delay_seconds
+            timeout_seconds       = var.startup_probe.timeout_seconds
+            period_seconds        = var.startup_probe.period_seconds
+            failure_threshold     = var.startup_probe.failure_threshold
+
+            dynamic "http_get" {
+              for_each = var.startup_probe.http_get == null ? [] : [""]
+
+              content {
+                path = var.startup_probe.http_get.path
+                port = var.startup_probe.http_get.port
+
+                dynamic "http_headers" {
+                  for_each = (
+                    var.startup_probe.http_get.http_headers
+                  )
+                  content {
+                    name  = http_headers.key
+                    value = http_headers.value
+                  }
+                }
+              }
+            }
+          }
+        }
+
         resources {
           requests = var.resources.requests
           limits   = var.resources.limits
