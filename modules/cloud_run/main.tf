@@ -74,7 +74,7 @@ resource "google_cloud_run_service" "service" {
         args  = var.args
 
         dynamic "startup_probe" {
-          for_each = length(var.startup_probe) > 0 ? [""] : []
+          for_each = var.startup_probe == null ? [] : [""]
 
           content {
             initial_delay_seconds = var.startup_probe.initial_delay_seconds
