@@ -104,6 +104,7 @@ resource "google_cloud_run_service" "service" {
           }
         }
 
+        # TODO: Implement tcp_socket and grpc configuration blocks
         dynamic "liveness_probe" {
           for_each = var.liveness_probe == null ? [] : [""]
 
