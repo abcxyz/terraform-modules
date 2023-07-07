@@ -186,6 +186,7 @@ resource "google_cloud_run_service" "service" {
       template[0].metadata[0].annotations["run.googleapis.com/sandbox"],
       template[0].metadata[0].annotations["serving.knative.dev/creator"],
       template[0].metadata[0].annotations["serving.knative.dev/lastModifier"],
+      template[0].metadata[0].labels["run.googleapis.com/startupProbeType"],
       template[0].spec[0].containers[0].image,
     ]
   }

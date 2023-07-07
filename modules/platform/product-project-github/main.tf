@@ -8,15 +8,13 @@ locals {
 
   type = var.guardian.enabled ? "guardian" : "automation"
 
+  guardian_workflows = [for workflow in var.guardian.workflows : "${local.repo_full_name}/.github/workflows/${workflow}@refs/heads/${var.github.default_branch}"]
+
   guardian_wif_attribute_condition = trimspace(chomp(<<-EOF
   attribute.repository_owner_id == "${var.github.owner_id}"
    && attribute.repository_id == "${var.github.repo_id}"
    && attribute.repository_visibility != "public"
-   && attribute.workflow_ref in [
-   "${local.repo_full_name}/.github/workflows/guardian-admin.yml@refs/heads/${var.github.default_branch}",
-   "${local.repo_full_name}/.github/workflows/guardian-apply.yml@refs/heads/${var.github.default_branch}",
-   "${local.repo_full_name}/.github/workflows/guardian-plan.yml@refs/heads/${var.github.default_branch}"
-  ]
+   && attribute.workflow_ref in [${join(", ", local.guardian_workflows)}]
   EOF
   ))
 
