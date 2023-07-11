@@ -1,0 +1,38 @@
+apiVersion: 'cli.abcxyz.dev/v1alpha1'
+kind: 'Template'
+
+desc: 'Generate Terraform configuration files for Google Cloud projects to enable the use of GitHub automation in a set of platform product environments'
+inputs:
+  - name: 'project_id'
+    desc: 'The id of the project to create (e.g. my-project)'
+
+  - name: 'github_owner_id'
+    desc: 'The GitHub owner id (e.g. 1111111111)'
+
+  - name: 'github_owner_name'
+    desc: 'The GitHub owner name (e.g. my-organization)'
+
+  - name: 'github_repo_id'
+    desc: 'The GitHub repository id (e.g. 1111111111)'
+
+  - name: 'github_repo_name'
+    desc: 'The GitHub repository name (e.g. gcp-org)'
+
+  - name: 'environments'
+    desc: 'A list of environments to create this project in (e.g. staging,production)'
+    default: ''
+
+steps:
+  - desc: 'Add required template files'
+    action: 'include'
+    params:
+      paths:
+        - 'project.github-automation.tf'
+      as:
+        - 'project.github-automation.{{.project_id}}.tf'
+
+  - desc: 'Render template with input variables'
+    action: 'go_template'
+    params:
+      paths:
+        - 'project.github-automation.{{.project_id}}.tf'

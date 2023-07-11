@@ -1,0 +1,26 @@
+apiVersion: 'cli.abcxyz.dev/v1alpha1'
+kind: 'Template'
+
+desc: 'Generate Terraform configuration files for Google Cloud projects in a set of platform product environments'
+inputs:
+  - name: 'project_id'
+    desc: 'The id of the proejct to create'
+
+  - name: 'environments'
+    desc: 'A list of environments to create this project in, leave empty to default to all product environments'
+    default: ''
+
+steps:
+  - desc: 'Add required template files'
+    action: 'include'
+    params:
+      paths:
+        - 'project.tf'
+      as:
+        - 'project.{{.project_id}}.tf'
+
+  - desc: 'Render template with input variables'
+    action: 'go_template'
+    params:
+      paths:
+        - 'project.{{.project_id}}.tf'

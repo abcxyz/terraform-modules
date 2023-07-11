@@ -1,0 +1,48 @@
+apiVersion: 'cli.abcxyz.dev/v1alpha1'
+kind: 'Template'
+
+desc: 'Generate Terraform configuration files for a platform product'
+inputs:
+  - name: 'product_id'
+    desc: 'The id of the product to create'
+
+  - name: 'team_group_email'
+    desc: 'The email address for the team group'
+
+  - name: 'breakglass_group_email'
+    desc: 'The email address for the breakglass group'
+
+  - name: 'environments'
+    desc: 'A list of environments to create'
+    default: 'integration,autopush,staging,production'
+
+  - name: 'bucket_name'
+    desc: 'The Google Clod storage bucket name for the Terraform state'
+
+  - name: 'bucket_prefix'
+    desc: 'The Terraform state bucket prefix'
+    default: 'gcp-org'
+
+steps:
+  - desc: 'Include some files and directories'
+    action: 'include'
+    params:
+      paths:
+        - 'product.tf'
+        - 'outputs.tf'
+        - 'imports.tf'
+        - 'terraform.tf'
+      as:
+        - '{{.product_id}}/product.tf'
+        - '{{.product_id}}/outputs.tf'
+        - '{{.product_id}}/imports.tf'
+        - '{{.product_id}}/terraform.tf'
+
+  - desc: 'Render template with input variables'
+    action: 'go_template'
+    params:
+      paths:
+        - '{{.product_id}}/product.tf'
+        - '{{.product_id}}/outputs.tf'
+        - '{{.product_id}}/imports.tf'
+        - '{{.product_id}}/terraform.tf'
