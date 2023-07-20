@@ -80,3 +80,15 @@ module "storage" {
   id                 = "${local.type}-${lookup(local.remote_state.org.product_environments[each.key], "short_code")}"
   bucket_admin_email = module.github_wif[each.key].service_account_email
 }
+
+# The Guardian service accounts require at least the editor role to modify a
+# project. Provide the environments output of project.<product-name>.tf to
+# grant each service account the editor role on the respective project environment.
+resource "google_project_iam_member" "guardian_sa_editor" {
+  for_each = var.environments
+
+  project = var.guardian.product_projects[each.value].project.project_id
+
+  role   = "roles/editor"
+  member = module.github_wif[each.value].service_account_member
+}
