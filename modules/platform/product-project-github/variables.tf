@@ -28,13 +28,13 @@ variable "guardian" {
   type = object({
     enabled                        = bool
     enable_wif_attribute_condition = optional(bool, true)
-    product_projects               = map(any)
+    managed_projects               = optional(map(any), {})
     workflows                      = list(string)
   })
   default = {
     enabled                        = false
     enable_wif_attribute_condition = true
-    product_projects               = {}
+    managed_projects               = {}
     workflows                      = ["guardian-admin.yml", "guardian-apply.yml", "guardian-plan.yml"]
   }
 }
