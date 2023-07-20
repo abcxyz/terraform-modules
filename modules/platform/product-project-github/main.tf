@@ -85,7 +85,7 @@ module "storage" {
 # project. Provide the environments output of project.<product-name>.tf to
 # grant each service account the editor role on the respective project environment.
 resource "google_project_iam_member" "guardian_sa_editor" {
-  for_each = var.guardian.managed_projects.environments
+  for_each = var.guardian.managed_projects
 
   project = each.value.project.project_id
 
