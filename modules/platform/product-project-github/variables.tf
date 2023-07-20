@@ -28,7 +28,7 @@ variable "guardian" {
   type = object({
     enabled                        = bool
     enable_wif_attribute_condition = optional(bool, true)
-    product_projects               = map(string)
+    product_projects               = map(any)
     workflows                      = list(string)
   })
   default = {
