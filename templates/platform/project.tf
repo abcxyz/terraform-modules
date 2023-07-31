@@ -1,11 +1,10 @@
 # TODO: factor out the "replace ...." ugliness using a go-template variable assignment (is this possible?)
-
 locals {
-  environments       = {{if .environments}}[{{range $index, $value := split .environments ","}}{{ if gt $index 0}}, {{end}}"{{$value}}"{{end}}]{{else}}module.product.environments{{end}}
+  environments = {{if .environments}}[{{range $index, $value := split .environments ","}}{{ if gt $index 0}}, {{end}}"{{$value}}"{{end}}]{{else}}module.product.environments{{end}}
 }
 
 module "{{replace .project_id "-" "_" -1}}" {
-  source = "git::https://github.com/abcxyz/terraform-modules.git//modules/platform/product-project?ref=46d3ffd82d7c3080bc5ec2cc788fe3e21176a8be"
+  source = "../../../modules/product-project"
 
   project_id = "{{.project_id}}"
 
