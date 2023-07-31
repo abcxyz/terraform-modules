@@ -1,0 +1,22 @@
+apiVersion: 'cli.abcxyz.dev/v1alpha1'
+kind: 'Template'
+
+desc: 'Enables Cloud Run and associated services for all projects'
+inputs:
+  - name: 'project_id'
+    desc: 'The id of the project to create'
+
+steps:
+  - desc: 'Add required template files'
+    action: 'include'
+    params:
+      paths:
+        - 'cloudrun.tf'
+      as:
+        - 'cloudrun.{{.project_id}}.tf'
+
+  - desc: 'Render template with input variables'
+    action: 'go_template'
+    params:
+      paths:
+        - 'cloudrun.{{.project_id}}.tf'
