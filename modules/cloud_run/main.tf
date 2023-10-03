@@ -245,7 +245,7 @@ resource "google_secret_manager_secret" "secrets" {
 
   secret_id = each.value
   replication {
-    automatic = true
+    auto {}
   }
 
   depends_on = [
