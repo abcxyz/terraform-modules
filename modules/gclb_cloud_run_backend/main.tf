@@ -138,6 +138,10 @@ resource "google_compute_region_network_endpoint_group" "default" {
   depends_on = [
     google_project_service.services["compute.googleapis.com"],
   ]
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "google_compute_backend_service" "default" {
