@@ -1,9 +1,6 @@
-<!-- BEGIN_TF_DOCS -->
-## Examples
-
-```terraform
 resource "google_service_account" "run_service_account" {
-  project      = "my-project-id"
+  project = "my-project-id"
+
   account_id   = "project-name-sa"
   display_name = "project-name-sa Cloud Run Service Account"
 }
@@ -44,16 +41,3 @@ module "cloud_run" {
   #   "run.googleapis.com/cloudsql-instances" = google_sql_database_instance.mysql_instance.connection_name
   # }
 }
-```
-
-
-
-
-
-
-
-
-
-
-
-<!-- END_TF_DOCS -->
