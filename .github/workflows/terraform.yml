@@ -9,6 +9,10 @@ on:
       - 'main'
   workflow_dispatch:
 
+env:
+  TERRAFORM_VERSION: '1.7.0'
+  TFDOCS_VERSION: '0.17.0'
+
 concurrency:
   group: '${{ github.workflow }}-${{ github.head_ref || github.ref }}'
   cancel-in-progress: true
@@ -18,7 +22,7 @@ jobs:
     uses: 'abcxyz/pkg/.github/workflows/terraform-lint.yml@main' # ratchet:exclude
     with:
       directory: './modules'
-      terraform_version: '1.6.6'
+      terraform_version: '1.7.0'
 
   terraform_docs:
     runs-on: 'ubuntu-latest'
@@ -26,9 +30,28 @@ jobs:
       - name: 'Checkout'
         uses: 'actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11' # ratchet:actions/checkout@v4
 
-      - name: 'Validate Docs'
-        uses: terraform-docs/gh-actions@f6d59f89a280fa0a3febf55ef68f146784b20ba0 # ratchet:terraform-docs/gh-actions@v1
+      - name: 'Setup terraform-docs'
+        uses: 'abcxyz/pkg/.github/actions/setup-binary@main' # ratchet:exclude
         with:
-          working-dir: '.'
-          config-file: '.terraform-docs.yml'
-          fail-on-diff: 'true'
+          download_url: 'https://github.com/terraform-docs/terraform-docs/releases/download/v${{ env.TFDOCS_VERSION }}/terraform-docs-v${{ env.TFDOCS_VERSION }}-linux-amd64.tar.gz'
+          checksum: '8e436d0c44db49c2ccd95deede05c3deba324b34a274be06cd9ba9cdf644e795'
+          install_path: '${{ runner.temp }}/.terraform-docs'
+          binary_subpath: 'terraform-docs'
+          cache_key: '${{ runner.os }}_${{ runner.arch }}_terraform-docs_${{ env.TFDOCS_VERSION }}'
+          add_to_path: true
+
+      - name: 'Validate Docs'
+        shell: 'bash'
+        run: |-
+          terraform-docs .
+
+          DIFF=$(git status --porcelain)
+
+          if [ ! -z "${DIFF}" ]; then
+            echo "ERROR: The following files differ from the pull request:"
+            echo ""
+            echo "${DIFF}"
+            echo ""
+            echo "::error ::Diff found for configured Terraform modules"
+            exit 1
+          fi

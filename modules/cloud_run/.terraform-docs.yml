@@ -15,11 +15,15 @@
 recursive:
   enabled: false
 
+sections:
+  show:
+    - 'all'
+
 content: |-
   ## Examples
 
   ```terraform
-  {{ include "examples/main.tf" }}
+  {{ include "../../examples/cloud_run/main.tf" }}
   ```
 
   {{ .Inputs }}

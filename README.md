@@ -6,7 +6,8 @@
 
 ### Prerequisites
 
-- (terraform-docs)[https://github.com/terraform-docs/terraform-docs]
+- (terraform-docs)[https://github.com/terraform-docs/terraform-docs] v0.17.0 or
+  later
 
 Run the `terraform-docs` command from the repository root to generate/update the
 Terraform documentation for all Terraform modules.
@@ -15,7 +16,7 @@ Terraform documentation for all Terraform modules.
 terraform-docs .
 ```
 
-By default, docs won't be show. To add a new module, you will need to create a
+By default, docs won't be shown. To add a new module, you will need to create a
 `.terraform-docs.yml` file in the modules directory.
 
 <!-- BEGIN_TF_DOCS -->

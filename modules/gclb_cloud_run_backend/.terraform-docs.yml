@@ -23,7 +23,7 @@ content: |-
   ## Examples
 
   ```terraform
-  {{ include "examples/main.tf" }}
+  {{ include "../../examples/gclb_cloud_run_backend/main.tf" }}
   ```
 
   {{ .Inputs }}
