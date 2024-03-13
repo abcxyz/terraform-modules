@@ -72,26 +72,58 @@ variable "execution_environment" {
   description = "The Cloud Run execution environment, possible values are: gen1, gen2 (defaults to 'gen1')."
 }
 
-variable "resources" {
-  type = object({
-    requests = object({
-      cpu    = string
-      memory = string
+variable "containers" {
+  type = map(object({
+    image   = string
+    args    = list(string)
+    envvars = map(string)
+    secret_envvars = map(object({
+      name    = string
+      version = string
+    }))
+    secret_volumes = map(object({
+      name    = string
+      version = string
+    }))
+    startup_probe = object({
+      initial_delay_seconds = optional(number, 0)
+      timeout_seconds       = optional(number, 1)
+      period_seconds        = optional(number, 10)
+      failure_threshold     = optional(number, 3)
+      http_get = optional(object({
+        http_headers = optional(map(string), {})
+        path         = optional(string)
+        port         = optional(number)
+      }), null)
     })
-    limits = object({
-      cpu    = string
-      memory = string
+    resources = object({
+      requests = object({
+        cpu    = string
+        memory = string
+      })
+      limits = object({
+        cpu    = string
+        memory = string
+      })
     })
   })
   default = {
-    requests = {
-      cpu    = "1000m"
-      memory = "512Mi" # minimum for gen2 runtime environment
+    image   = null
+    args    = []
+    envvars = {}
+    secret_envvars = {}
+    secret_volumes = {}
+    resources = {
+      requests = {
+        cpu    = "1000m"
+        memory = "512Mi" # minimum for gen2 runtime environment
+      }
+      limits = {
+        cpu    = "1000m"
+        memory = "512Mi"
+      }
     }
-    limits = {
-      cpu    = "1000m"
-      memory = "512Mi"
-    }
+    startup_probe = null
   }
   description = "The compute resource requests and limits for the Cloud Run service."
 }
@@ -102,44 +134,9 @@ variable "ingress" {
   description = "The ingress settings for the Cloud Run service, possible values: all, internal, internal-and-cloud-load-balancing (defaults to 'all')."
 }
 
-variable "image" {
-  type        = string
-  description = "The container image for the Cloud Run service."
-}
-
 variable "service_account_email" {
   type        = string
   description = "The service account email for Cloud Run to run as."
-}
-
-variable "envvars" {
-  type        = map(string)
-  default     = {}
-  description = "Environment variables for the Cloud Run service (plain text)."
-}
-
-variable "secret_envvars" {
-  type = map(object({
-    name    = string
-    version = string
-  }))
-  default     = {}
-  description = "Secret environment variables for the Cloud Run service (Secret Manager)."
-}
-
-variable "secret_volumes" {
-  type = map(object({
-    name    = string
-    version = string
-  }))
-  default     = {}
-  description = "Volume mounts for the Cloud Run service (Secret Manager)."
-}
-
-variable "args" {
-  type        = list(string)
-  default     = []
-  description = "Arguments to the cloud run container's entrypoint."
 }
 
 variable "additional_revision_annotations" {
@@ -148,18 +145,3 @@ variable "additional_revision_annotations" {
   description = "Annotations to add to the template.metadata.annotations field."
 }
 
-variable "startup_probe" {
-  type = object({
-    initial_delay_seconds = optional(number, 0)
-    timeout_seconds       = optional(number, 1)
-    period_seconds        = optional(number, 10)
-    failure_threshold     = optional(number, 3)
-    http_get = optional(object({
-      http_headers = optional(map(string), {})
-      path         = optional(string)
-      port         = optional(number)
-    }), null)
-  })
-  default     = null
-  description = "Optional startup probe configuration"
-}
