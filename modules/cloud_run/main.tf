@@ -69,30 +69,34 @@ resource "google_cloud_run_service" "service" {
   template {
     spec {
       service_account_name = var.service_account_email
-      containers {
-        image = var.image
-        args  = var.args
+      dynamic "containers" {
+        for_each = (
+          var.containers
+        )
+        name  = containers.key
+        image = containers.value.image
+        args  = containers.value.args
 
         # TODO: Implement tcp_socket and grpc configuration blocks
         dynamic "startup_probe" {
-          for_each = var.startup_probe == null ? [] : [""]
+          for_each = containers.value.startup_probe == null ? [] : [""]
 
           content {
-            initial_delay_seconds = var.startup_probe.initial_delay_seconds
-            timeout_seconds       = var.startup_probe.timeout_seconds
-            period_seconds        = var.startup_probe.period_seconds
-            failure_threshold     = var.startup_probe.failure_threshold
+            initial_delay_seconds = containers.value.startup_probe.initial_delay_seconds
+            timeout_seconds       = containers.value.startup_probe.timeout_seconds
+            period_seconds        = containers.value.startup_probe.period_seconds
+            failure_threshold     = containers.value.startup_probe.failure_threshold
 
             dynamic "http_get" {
-              for_each = var.startup_probe.http_get == null ? [] : [""]
+              for_each = containers.value.startup_probe.http_get == null ? [] : [""]
 
               content {
-                path = var.startup_probe.http_get.path
-                port = var.startup_probe.http_get.port
+                path = containers.value.startup_probe.http_get.path
+                port = containers.value.startup_probe.http_get.port
 
                 dynamic "http_headers" {
                   for_each = (
-                    var.startup_probe.http_get.http_headers
+                    containers.value.startup_probe.http_get.http_headers
                   )
                   content {
                     name  = http_headers.key
@@ -105,12 +109,12 @@ resource "google_cloud_run_service" "service" {
         }
 
         resources {
-          requests = var.resources.requests
-          limits   = var.resources.limits
+          requests = containers.value.resources.requests
+          limits   = containers.value.resources.limits
         }
 
         dynamic "env" {
-          for_each = merge(local.default_run_envvars, var.envvars)
+          for_each = merge(local.default_run_envvars, containers.value.envvars)
 
           content {
             name  = env.key
@@ -119,7 +123,7 @@ resource "google_cloud_run_service" "service" {
         }
 
         dynamic "env" {
-          for_each = merge(local.default_run_secret_envvars, var.secret_envvars)
+          for_each = merge(local.default_run_secret_envvars, containers.value.secret_envvars)
 
           content {
             name = env.key
@@ -133,7 +137,7 @@ resource "google_cloud_run_service" "service" {
         }
 
         dynamic "volume_mounts" {
-          for_each = merge(local.default_run_secret_volumes, var.secret_volumes)
+          for_each = merge(local.default_run_secret_volumes, containers.value.secret_volumes)
           content {
             mount_path = volume_mounts.key
             name       = volume_mounts.value.name
@@ -142,7 +146,7 @@ resource "google_cloud_run_service" "service" {
       }
 
       dynamic "volumes" {
-        for_each = merge(local.default_run_secret_volumes, var.secret_volumes)
+        for_each = merge(local.default_run_secret_volumes, containers.value.secret_volumes)
         content {
           name = volumes.value.name
           secret {
