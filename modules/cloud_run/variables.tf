@@ -106,7 +106,7 @@ variable "containers" {
         memory = string
       })
     })
-  })
+  }))
   default = {
     image   = null
     args    = []
