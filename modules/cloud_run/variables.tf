@@ -108,9 +108,9 @@ variable "containers" {
     })
   }))
   default = {
-    image   = null
-    args    = []
-    envvars = {}
+    image          = null
+    args           = []
+    envvars        = {}
     secret_envvars = {}
     secret_volumes = {}
     resources = {
