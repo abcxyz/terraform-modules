@@ -6,8 +6,8 @@
 
 ### Prerequisites
 
-- (terraform-docs)[https://github.com/terraform-docs/terraform-docs] v0.17.0 or
-  later
+- [`terraform-docs`](https://github.com/terraform-docs/terraform-docs) v0.17.0
+  or later
 
 Run the `terraform-docs` command from the repository root to generate/update the
 Terraform documentation for all Terraform modules.
