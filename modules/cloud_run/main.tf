@@ -180,6 +180,7 @@ resource "google_cloud_run_service" "service" {
       metadata[0].labels["cloud.googleapis.com/location"],
       metadata[0].labels["commit-sha"],
       metadata[0].labels["managed-by"],
+      metadata[0].labels["sha"],
       status,
       template[0].metadata[0].annotations["client.knative.dev/user-image"],
       template[0].metadata[0].annotations["run.googleapis.com/client-name"],
