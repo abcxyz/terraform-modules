@@ -180,7 +180,6 @@ resource "google_cloud_run_service" "service" {
       metadata[0].labels["cloud.googleapis.com/location"],
       metadata[0].labels["commit-sha"],
       metadata[0].labels["managed-by"],
-      metadata[0].labels["sha"],
       template[0].metadata[0].annotations["client.knative.dev/user-image"],
       template[0].metadata[0].annotations["run.googleapis.com/client-name"],
       template[0].metadata[0].annotations["run.googleapis.com/client-version"],
@@ -189,6 +188,7 @@ resource "google_cloud_run_service" "service" {
       template[0].metadata[0].annotations["serving.knative.dev/lastModifier"],
       template[0].metadata[0].labels["run.googleapis.com/startupProbeType"],
       template[0].metadata[0].labels["client.knative.dev/nonce"],
+      template[0].metadata[0].labels["sha"],
       template[0].spec[0].containers[0].image,
     ]
   }
