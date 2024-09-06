@@ -165,6 +165,7 @@ resource "google_compute_backend_service" "default" {
   dynamic "iap" {
     for_each = var.iap_config.enable ? [1] : []
     content {
+      enabled              = true
       oauth2_client_id     = var.iap_config.oauth2_client_id
       oauth2_client_secret = var.iap_config.oauth2_client_secret
     }
