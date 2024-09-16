@@ -27,7 +27,6 @@ locals {
   minute = 60 * local.second
   hour   = 60 * local.minute
   day    = 24 * local.hour
-
 }
 
 resource "google_monitoring_alert_policy" "forward_progress_alert_policy" {
@@ -153,6 +152,78 @@ resource "google_monitoring_alert_policy" "cpu_alert_policy" {
     content {
       content   = var.runbook_urls.cpu
       mime_type = "text/markdown"
+    }
+  }
+
+  notification_channels = var.notification_channels
+}
+
+resource "google_logging_metric" "text_payload_logging_metric" {
+  for_each = var.log_based_text_indicators
+
+  project = var.project_id
+
+  name = "${local.resource_value}-${each.key}"
+
+  filter = <<EOT
+    resource.type=${local.resource_type}
+    log_name="projects/${var.project_id}/logs/${local.metric_root}%2F${replace(each.value.log_name_suffix, "/", "%2F")}"
+    severity=${each.value.severity}
+    textPayload="${each.value.textPayload}"
+  EOT
+
+  metric_descriptor {
+    metric_kind = "DELTA"
+    value_type  = "INT64"
+    labels {
+      key         = "location"
+      value_type  = "STRING"
+      description = "location of service"
+    }
+    labels {
+      key         = "service_name"
+      value_type  = "STRING"
+      description = "name of service"
+    }
+  }
+
+  label_extractors = {
+    "location"     = "EXTRACT(resource.labels.location)"
+    "service_name" = "EXTRACT(resource.labels.service_name)"
+  }
+}
+
+resource "google_monitoring_alert_policy" "text_payload_logging_alert_policy" {
+  for_each = var.log_based_text_indicators
+
+  project = var.project_id
+
+  display_name = "CloudRunLogBased-${each.key}-${local.resource_value}"
+  combiner     = "OR"
+
+  conditions {
+    display_name = "${local.resource_value} ${each.key}"
+
+    condition_matched_log {
+      filter = <<EOT
+        resource.type=${local.resource_type}
+        log_name="projects/${var.project_id}/logs/${local.metric_root}%2F${replace(each.value.log_name_suffix, "/", "%2F")}"
+        severity>=${each.value.severity}
+        textPayload="${each.value.textPayload}"
+      EOT
+
+      label_extractors = {
+        "revision_name" = "EXTRACT(resource.labels.revision_name)"
+        "location"      = "EXTRACT(resource.labels.location)"
+      }
+    }
+  }
+
+  alert_strategy {
+    auto_close = "${local.day}s"
+
+    notification_rate_limit {
+      period = "${local.day}s"
     }
   }
 

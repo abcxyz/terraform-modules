@@ -58,6 +58,22 @@ variable "built_in_cpu_indicators" {
   }))
 }
 
+variable "log_based_text_indicators" {
+  description = "Map for Cloud Run log based indicators. Only support text payload logs."
+  type = map(object({
+    log_name_suffix = string
+    severity        = string
+    textPayload     = string
+  }))
+  validation {
+    condition = alltrue([
+      for k, v in var.log_based_text_indicators :
+      contains(["DEBUG", "INFO", "WARN", "ERROR"], v.severity)
+    ])
+    error_message = "The 'severity' field must be one of: 'DEBUG', 'INFO', 'WARN', 'ERROR'."
+  }
+}
+
 variable "notification_channels" {
   description = "List of notification channels to alert."
   type        = list(string)
