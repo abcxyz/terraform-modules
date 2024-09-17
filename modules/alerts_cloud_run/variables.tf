@@ -72,6 +72,7 @@ variable "log_based_text_indicators" {
     ])
     error_message = "The 'severity' field must be one of: 'DEBUG', 'INFO', 'WARN', 'ERROR'."
   }
+  default = {}
 }
 
 variable "notification_channels" {

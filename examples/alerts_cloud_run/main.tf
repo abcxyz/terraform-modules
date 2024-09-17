@@ -22,7 +22,7 @@ module "cloud_run_service_alerts" {
   }
 
   log_based_text_indicators = {
-    "scaling-failure" : {
+    "scaling-failure" = {
       log_name_suffix = "request"
       severity        = "ERROR"
       textPayload     = "The request was aborted because there was no available instance."
