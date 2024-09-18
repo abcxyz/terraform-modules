@@ -23,9 +23,17 @@ module "cloud_run_service_alerts" {
 
   log_based_text_indicators = {
     "scaling-failure" = {
-      log_name_suffix = "request"
-      severity        = "ERROR"
-      textPayload     = "The request was aborted because there was no available instance."
+      log_name_suffix      = "request"
+      severity             = "ERROR"
+      text_payload_message = "The request was aborted because there was no available instance."
+    }
+  }
+
+  log_based_json_indicators = {
+    "image-resize-failure" = {
+      log_name_suffix      = "stdout"
+      severity             = "ERROR"
+      json_payload_message = "Failed to resize image.*"
     }
   }
 }

@@ -169,7 +169,8 @@ resource "google_logging_metric" "text_payload_logging_metric" {
     resource.type=${local.resource_type}
     log_name="projects/${var.project_id}/logs/${local.metric_root}%2F${replace(each.value.log_name_suffix, "/", "%2F")}"
     severity=${each.value.severity}
-    textPayload="${each.value.textPayload}"
+    textPayload=~"${each.value.text_payload_message}"
+    ${each.value.additional_filters != null ? each.value.additional_filters : ""}
   EOT
 
   metric_descriptor {
@@ -198,7 +199,7 @@ resource "google_monitoring_alert_policy" "text_payload_logging_alert_policy" {
 
   project = var.project_id
 
-  display_name = "CloudRunLogBased-${each.key}-${local.resource_value}"
+  display_name = "LogBasedText-${each.key}-${local.resource_value}"
   combiner     = "OR"
 
   conditions {
@@ -209,7 +210,8 @@ resource "google_monitoring_alert_policy" "text_payload_logging_alert_policy" {
         resource.type=${local.resource_type}
         log_name="projects/${var.project_id}/logs/${local.metric_root}%2F${replace(each.value.log_name_suffix, "/", "%2F")}"
         severity>=${each.value.severity}
-        textPayload="${each.value.textPayload}"
+        textPayload=~"${each.value.text_payload_message}"
+        ${each.value.additional_filters != null ? each.value.additional_filters : ""}
       EOT
 
       label_extractors = {
@@ -229,3 +231,78 @@ resource "google_monitoring_alert_policy" "text_payload_logging_alert_policy" {
 
   notification_channels = var.notification_channels
 }
+
+resource "google_logging_metric" "json_payload_logging_metric" {
+  for_each = var.log_based_json_indicators
+
+  project = var.project_id
+
+  name = "${local.resource_value}-${each.key}"
+
+  filter = <<EOT
+    resource.type=${local.resource_type}
+    log_name="projects/${var.project_id}/logs/${local.metric_root}%2F${replace(each.value.log_name_suffix, "/", "%2F")}"
+    severity=${each.value.severity}
+    jsonPayload.message=~"${each.value.json_payload_message}"
+    ${each.value.additional_filters != null ? each.value.additional_filters : ""}
+  EOT
+
+  metric_descriptor {
+    metric_kind = "DELTA"
+    value_type  = "INT64"
+    labels {
+      key         = "location"
+      value_type  = "STRING"
+      description = "location of service"
+    }
+    labels {
+      key         = "service_name"
+      value_type  = "STRING"
+      description = "name of service"
+    }
+  }
+
+  label_extractors = {
+    "location"     = "EXTRACT(resource.labels.location)"
+    "service_name" = "EXTRACT(resource.labels.service_name)"
+  }
+}
+
+resource "google_monitoring_alert_policy" "json_payload_logging_alert_policy" {
+  for_each = var.log_based_json_indicators
+
+  project = var.project_id
+
+  display_name = "LogBasedJSON-${each.key}-${local.resource_value}"
+  combiner     = "OR"
+
+  conditions {
+    display_name = "${local.resource_value} ${each.key}"
+
+    condition_matched_log {
+      filter = <<EOT
+        resource.type=${local.resource_type}
+        log_name="projects/${var.project_id}/logs/${local.metric_root}%2F${replace(each.value.log_name_suffix, "/", "%2F")}"
+        severity>=${each.value.severity}
+        jsonPayload.message=~"${each.value.json_payload_message}"
+        ${each.value.additional_filters != null ? each.value.additional_filters : ""}
+      EOT
+
+      label_extractors = {
+        "revision_name" = "EXTRACT(resource.labels.revision_name)"
+        "location"      = "EXTRACT(resource.labels.location)"
+      }
+    }
+  }
+
+  alert_strategy {
+    auto_close = "${local.day}s"
+
+    notification_rate_limit {
+      period = "${local.day}s"
+    }
+  }
+
+  notification_channels = var.notification_channels
+}
+
