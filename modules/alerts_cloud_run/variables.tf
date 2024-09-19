@@ -32,30 +32,45 @@ variable "cloud_run_resource" {
 variable "runbook_urls" {
   description = "URLs of markdown files."
   type = object({
-    forward_progress = string
-    cpu              = string
+    forward_progress = optional(string)
+    container_util   = optional(string)
+    bad_request      = optional(string)
+    server_fault     = optional(string)
   })
   default = {
     forward_progress = ""
-    cpu              = ""
+    container_util   = ""
+    bad_request      = ""
+    server_fault     = ""
   }
 }
 
 variable "built_in_forward_progress_indicators" {
   description = "Map for forward progress Cloud Run indicators. The window must be in seconds."
   type = map(object({
-    metric = string
-    window = number
+    metric                        = string
+    window                        = number
+    threshold                     = number
+    consecutive_window_violations = number
   }))
 }
 
-variable "built_in_cpu_indicators" {
-  description = "Map for CPU Cloud Run indicators. The window must be in seconds."
+variable "built_in_container_util_indicators" {
+  description = "Map for Cloud Run container utilization indicators. The window must be in seconds. Threshold should be represented "
   type = map(object({
-    metric    = string
-    window    = number
-    threshold = number
+    metric                        = string
+    window                        = number
+    threshold                     = number
+    p_value                       = number
+    consecutive_window_violations = number
   }))
+  validation {
+    condition = alltrue([
+      for k, v in var.built_in_container_util_indicators :
+      contains([50, 95, 99], v.p_value)
+    ])
+    error_message = "The 'p_value' field must be one of: 50, 95, 99."
+  }
 }
 
 variable "log_based_text_indicators" {
@@ -65,6 +80,11 @@ variable "log_based_text_indicators" {
     severity             = string
     text_payload_message = string
     additional_filters   = optional(string)
+    condition_threshold = optional(object({
+      window                        = number
+      threshold                     = number
+      consecutive_window_violations = number
+    }))
   }))
   validation {
     condition = alltrue([
@@ -83,6 +103,11 @@ variable "log_based_json_indicators" {
     severity             = string
     json_payload_message = string
     additional_filters   = optional(string)
+    condition_threshold = optional(object({
+      window                        = number
+      threshold                     = number
+      consecutive_window_violations = number
+    }))
   }))
   validation {
     condition = alltrue([
@@ -98,4 +123,86 @@ variable "notification_channels" {
   description = "List of notification channels to alert."
   type        = list(string)
   default     = []
+}
+
+variable "service_4xx_configuration" {
+  description = "Configuration applied to the 4xx alert policy. Only applies to services."
+  type = object({
+    window                        = number
+    threshold                     = number
+    consecutive_window_violations = number
+  })
+  default = {
+    window                        = 300
+    threshold                     = 0
+    consecutive_window_violations = 2
+  }
+}
+
+variable "service_5xx_configuration" {
+  description = "Configuration applied to the 5xx alert policy. Only applies to services."
+  type = object({
+    window                        = number
+    threshold                     = number
+    consecutive_window_violations = number
+  })
+  default = {
+    window                        = 300
+    threshold                     = 0
+    consecutive_window_violations = 2
+  }
+}
+
+variable "service_latency_configuration" {
+  description = "Configuration applied to the request latency alert policy. Only applies to services."
+  type = object({
+    window                        = number
+    threshold                     = number
+    consecutive_window_violations = number
+    p_value                       = number
+  })
+  default = {
+    window                        = 300
+    threshold                     = 0
+    consecutive_window_violations = 2
+    p_value                       = 95
+  }
+  validation {
+    condition     = contains([50, 95, 99], var.service_latency_configuration.p_value)
+    error_message = "The 'p_value' field must be one of: 50, 95, 99."
+  }
+}
+
+variable "service_max_conns_configuration" {
+  description = "Configuration applied to the max connections alert policy. Only applies to services."
+  type = object({
+    window                        = number
+    threshold                     = number
+    consecutive_window_violations = number
+    p_value                       = number
+  })
+  default = {
+    window                        = 300
+    threshold                     = 0
+    consecutive_window_violations = 2
+    p_value                       = 95
+  }
+  validation {
+    condition     = contains([50, 95, 99], var.service_max_conns_configuration.p_value)
+    error_message = "The 'p_value' field must be one of: 50, 95, 99."
+  }
+}
+
+variable "job_failure_configuration" {
+  description = "Configuration applied to the job failure alert policy. Only applies to jobs."
+  type = object({
+    window                        = number
+    threshold                     = number
+    consecutive_window_violations = number
+  })
+  default = {
+    window                        = 300
+    threshold                     = 0
+    consecutive_window_violations = 1
+  }
 }
