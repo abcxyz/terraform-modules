@@ -26,3 +26,8 @@ output "url" {
   description = "The Cloud Run service url."
   value       = google_cloud_run_service.service.status.0.url
 }
+
+output "revision_name" {
+  description = "The Cloud Run latest revision name."
+  value       = google_cloud_run_service.service.status.0.latest_ready_revision_name
+}

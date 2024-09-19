@@ -74,6 +74,7 @@ module "cloud_run" {
 
 | Name | Description |
 |------|-------------|
+| <a name="output_revision_name"></a> [revision\_name](#output\_revision\_name) | The Cloud Run latest revision name. |
 | <a name="output_service_id"></a> [service\_id](#output\_service\_id) | The Cloud Run service id. |
 | <a name="output_service_name"></a> [service\_name](#output\_service\_name) | The Cloud Run service name. |
 | <a name="output_url"></a> [url](#output\_url) | The Cloud Run service url. |
