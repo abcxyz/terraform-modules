@@ -32,17 +32,12 @@ variable "cloud_run_resource" {
 variable "runbook_urls" {
   description = "URLs of markdown files."
   type = object({
-    forward_progress = optional(string)
-    container_util   = optional(string)
-    bad_request      = optional(string)
-    server_fault     = optional(string)
+    forward_progress = string
+    container_util   = string
+    bad_request      = string
+    server_fault     = string
+    request_latency  = string
   })
-  default = {
-    forward_progress = ""
-    container_util   = ""
-    bad_request      = ""
-    server_fault     = ""
-  }
 }
 
 variable "built_in_forward_progress_indicators" {
@@ -79,6 +74,7 @@ variable "log_based_text_indicators" {
     log_name_suffix      = string
     severity             = string
     text_payload_message = string
+    runbook_url          = optional(string)
     additional_filters   = optional(string)
     condition_threshold = optional(object({
       window                        = number
@@ -102,6 +98,7 @@ variable "log_based_json_indicators" {
     log_name_suffix      = string
     severity             = string
     json_payload_message = string
+    runbook_url          = optional(string)
     additional_filters   = optional(string)
     condition_threshold = optional(object({
       window                        = number
