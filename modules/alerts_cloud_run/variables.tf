@@ -32,11 +32,15 @@ variable "cloud_run_resource" {
 variable "runbook_urls" {
   description = "URLs of markdown files."
   type = object({
-    forward_progress = string
-    container_util   = string
-    bad_request      = string
-    server_fault     = string
-    request_latency  = string
+    forward_progress = optional(string)
+    container_util   = optional(string)
+    bad_request      = optional(string)
+    server_fault     = optional(string)
+    request_latency  = optional(string)
+    max_conns        = optional(string)
+    job_failure      = optional(string)
+    text_based_logs  = optional(string)
+    json_based_logs  = optional(string)
   })
 }
 
@@ -74,13 +78,12 @@ variable "log_based_text_indicators" {
     log_name_suffix      = string
     severity             = string
     text_payload_message = string
-    runbook_url          = optional(string)
-    additional_filters   = optional(string)
-    condition_threshold = optional(object({
+    condition_threshold = object({
       window                        = number
       threshold                     = number
       consecutive_window_violations = number
-    }))
+    })
+    additional_filters = optional(string)
   }))
   validation {
     condition = alltrue([
@@ -98,13 +101,12 @@ variable "log_based_json_indicators" {
     log_name_suffix      = string
     severity             = string
     json_payload_message = string
-    runbook_url          = optional(string)
-    additional_filters   = optional(string)
-    condition_threshold = optional(object({
+    condition_threshold = object({
       window                        = number
       threshold                     = number
       consecutive_window_violations = number
-    }))
+    })
+    additional_filters = optional(string)
   }))
   validation {
     condition = alltrue([

@@ -103,9 +103,12 @@ resource "google_monitoring_alert_policy" "forward_progress_alert_policy" {
     }
   }
 
-  documentation {
-    content   = var.runbook_urls.forward_progress
-    mime_type = "text/markdown"
+  dynamic "documentation" {
+    for_each = var.runbook_urls.forward_progress != null ? [1] : []
+    content {
+      content   = var.runbook_urls.forward_progress
+      mime_type = "text/markdown"
+    }
   }
 
   notification_channels = var.notification_channels
@@ -158,9 +161,12 @@ resource "google_monitoring_alert_policy" "container_util_alert_policy" {
     }
   }
 
-  documentation {
-    content   = var.runbook_urls.container_util
-    mime_type = "text/markdown"
+  dynamic "documentation" {
+    for_each = var.runbook_urls.container_util != null ? [1] : []
+    content {
+      content   = var.runbook_urls.container_util
+      mime_type = "text/markdown"
+    }
   }
 
   notification_channels = var.notification_channels
@@ -205,47 +211,27 @@ resource "google_logging_metric" "text_payload_logging_metric" {
 }
 
 resource "google_monitoring_alert_policy" "text_payload_logging_alert_policy" {
-  for_each = var.log_based_text_indicators
+  count = length(keys(var.log_based_text_indicators)) > 0 ? 1 : 0
 
   project = var.project_id
 
-  display_name = "LogBasedText-${local.resource_value}-${each.key}"
+  display_name = "LogBasedText-${local.resource_value}"
   combiner     = "OR"
 
-  conditions {
-    display_name = "${each.key} logging high"
+  dynamic "conditions" {
+    for_each = var.log_based_text_indicators
+    content {
+      display_name = "${conditions.key} logging high"
 
-    dynamic "condition_matched_log" {
-      for_each = each.value.condition_threshold == null ? [1] : []
-
-      content {
-        filter = <<EOT
-            resource.type=${local.resource_type}
-            log_name="projects/${var.project_id}/logs/${local.metric_root}%2F${replace(each.value.log_name_suffix, "/", "%2F")}"
-            severity>=${each.value.severity}
-            textPayload=~"${each.value.text_payload_message}"
-            ${each.value.additional_filters != null ? each.value.additional_filters : ""}
-          EOT
-
-        label_extractors = {
-          "revision_name" = "EXTRACT(resource.labels.revision_name)"
-          "location"      = "EXTRACT(resource.labels.location)"
-        }
-      }
-    }
-
-    dynamic "condition_threshold" {
-      for_each = each.value.condition_threshold != null ? [1] : []
-
-      content {
+      condition_threshold {
         filter = <<-EOT
-            metric.type="${local.user_metric_root_prefix}/${local.resource_value}-${conditions.key}" 
-            resource.type="${local.resource_type}"
-          EOT
+        metric.type="${local.user_metric_root_prefix}/${local.resource_value}-${conditions.key}" 
+        resource.type="${local.resource_type}"
+      EOT
 
-        duration        = "${each.value.condition_threshold.window}s"
+        duration        = "${conditions.value.condition_threshold.window}s"
         comparison      = "COMPARISON_GT"
-        threshold_value = each.value.condition_threshold.threshold
+        threshold_value = conditions.value.condition_threshold.threshold
 
         aggregations {
           alignment_period     = "60s"
@@ -255,7 +241,7 @@ resource "google_monitoring_alert_policy" "text_payload_logging_alert_policy" {
         }
 
         trigger {
-          count = each.value.condition_threshold.consecutive_window_violations
+          count = conditions.value.condition_threshold.consecutive_window_violations
         }
       }
     }
@@ -270,9 +256,9 @@ resource "google_monitoring_alert_policy" "text_payload_logging_alert_policy" {
   }
 
   dynamic "documentation" {
-    for_each = each.value.runbook_url != "" ? [1] : []
+    for_each = var.runbook_urls.text_based_logs != null ? [1] : []
     content {
-      content   = each.value.runbook_url
+      content   = var.runbook_urls.text_based_logs
       mime_type = "text/markdown"
     }
   }
@@ -317,47 +303,28 @@ resource "google_logging_metric" "json_payload_logging_metric" {
 }
 
 resource "google_monitoring_alert_policy" "json_payload_logging_alert_policy" {
-  for_each = var.log_based_json_indicators
+  count = length(keys(var.log_based_json_indicators)) > 0 ? 1 : 0
 
   project = var.project_id
 
-  display_name = "LogBasedJSON-${local.resource_value}-${each.key}"
+  display_name = "LogBasedJSON-${local.resource_value}"
   combiner     = "OR"
 
-  conditions {
-    display_name = "${each.key} logging high"
+  dynamic "conditions" {
+    for_each = var.log_based_json_indicators
 
-    dynamic "condition_matched_log" {
-      for_each = each.value.condition_threshold == null ? [1] : []
+    content {
+      display_name = "${conditions.key} logging high"
 
-      content {
-        filter = <<EOT
-            resource.type=${local.resource_type}
-            log_name="projects/${var.project_id}/logs/${local.metric_root}%2F${replace(each.value.log_name_suffix, "/", "%2F")}"
-            severity>=${each.value.severity}
-            jsonPayload.message=~"${each.value.json_payload_message}"
-            ${each.value.additional_filters != null ? each.value.additional_filters : ""}
-          EOT
-
-        label_extractors = {
-          "revision_name" = "EXTRACT(resource.labels.revision_name)"
-          "location"      = "EXTRACT(resource.labels.location)"
-        }
-      }
-    }
-
-    dynamic "condition_threshold" {
-      for_each = each.value.condition_threshold != null ? [1] : []
-
-      content {
+      condition_threshold {
         filter = <<-EOT
-            metric.type="${local.user_metric_root_prefix}/${local.resource_value}-${each.key}" 
+            metric.type="${local.user_metric_root_prefix}/${local.resource_value}-${conditions.key}" 
             resource.type="${local.resource_type}"
           EOT
 
-        duration        = "${each.value.condition_threshold.window}s"
+        duration        = "${conditions.value.condition_threshold.window}s"
         comparison      = "COMPARISON_GT"
-        threshold_value = each.value.condition_threshold.threshold
+        threshold_value = conditions.value.condition_threshold.threshold
 
         aggregations {
           alignment_period     = "60s"
@@ -367,7 +334,7 @@ resource "google_monitoring_alert_policy" "json_payload_logging_alert_policy" {
         }
 
         trigger {
-          count = each.value.condition_threshold.consecutive_window_violations
+          count = conditions.value.condition_threshold.consecutive_window_violations
         }
       }
     }
@@ -382,9 +349,9 @@ resource "google_monitoring_alert_policy" "json_payload_logging_alert_policy" {
   }
 
   dynamic "documentation" {
-    for_each = each.value.runbook_url != "" ? [1] : []
+    for_each = var.runbook_urls.json_based_logs != null ? [1] : []
     content {
-      content   = each.value.runbook_url
+      content   = var.runbook_urls.json_based_logs
       mime_type = "text/markdown"
     }
   }
@@ -439,9 +406,12 @@ resource "google_monitoring_alert_policy" "service_4xx_alert_policy" {
     }
   }
 
-  documentation {
-    content   = var.runbook_urls.bad_request
-    mime_type = "text/markdown"
+  dynamic "documentation" {
+    for_each = var.runbook_urls.bad_request != null ? [1] : []
+    content {
+      content   = var.runbook_urls.bad_request
+      mime_type = "text/markdown"
+    }
   }
 
   notification_channels = var.notification_channels
@@ -492,9 +462,12 @@ resource "google_monitoring_alert_policy" "service_5xx_alert_policy" {
     }
   }
 
-  documentation {
-    content   = var.runbook_urls.server_fault
-    mime_type = "text/markdown"
+  dynamic "documentation" {
+    for_each = var.runbook_urls.server_fault != null ? [1] : []
+    content {
+      content   = var.runbook_urls.server_fault
+      mime_type = "text/markdown"
+    }
   }
 
   notification_channels = var.notification_channels
@@ -543,9 +516,12 @@ resource "google_monitoring_alert_policy" "service_latency_alert_policy" {
     }
   }
 
-  documentation {
-    content   = var.runbook_urls.request_latency
-    mime_type = "text/markdown"
+  dynamic "documentation" {
+    for_each = var.runbook_urls.request_latency != null ? [1] : []
+    content {
+      content   = var.runbook_urls.request_latency
+      mime_type = "text/markdown"
+    }
   }
 
   notification_channels = var.notification_channels
@@ -594,9 +570,12 @@ resource "google_monitoring_alert_policy" "service_max_conns_alert_policy" {
     }
   }
 
-  documentation {
-    content   = var.runbook_urls.container_util
-    mime_type = "text/markdown"
+  dynamic "documentation" {
+    for_each = var.runbook_urls.max_conns != null ? [1] : []
+    content {
+      content   = var.runbook_urls.max_conns
+      mime_type = "text/markdown"
+    }
   }
 
   notification_channels = var.notification_channels
@@ -646,6 +625,14 @@ resource "google_monitoring_alert_policy" "job_failure_alert_policy" {
 
     notification_channel_strategy {
       renotify_interval = "${local.day}s"
+    }
+  }
+
+  dynamic "documentation" {
+    for_each = var.runbook_urls.job_failure != null ? [1] : []
+    content {
+      content   = var.runbook_urls.job_failure
+      mime_type = "text/markdown"
     }
   }
 

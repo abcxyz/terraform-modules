@@ -44,7 +44,6 @@ module "cloud_run_service_alerts" {
       log_name_suffix      = "request"
       severity             = "ERROR"
       text_payload_message = "The request was aborted because there was no available instance."
-      runbook_url          = "https://github.com/org/repo/blob/main/docs/playbooks/alerts/runbook.md"
       condition_threshold = {
         window                        = 10 * local.minute
         threshold                     = 1
@@ -58,8 +57,12 @@ module "cloud_run_service_alerts" {
       log_name_suffix      = "stdout"
       severity             = "ERROR"
       json_payload_message = "Failed.*"
-      runbook_url          = "https://github.com/org/repo/blob/main/docs/playbooks/alerts/runbook.md"
       additional_filters   = "jsonPayload.method=<your_method_name>"
+      condition_threshold = {
+        window                        = 10 * local.minute
+        threshold                     = 0
+        consecutive_window_violations = 1
+      }
     }
   }
 
