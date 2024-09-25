@@ -7,12 +7,13 @@ module "cloud_run_service_alerts" {
     service_name = "my-service-name"
   }
 
-  notification_channels = ["notification-channel-id"]
+  notification_channels_non_paging = ["notification-channel-id"]
   runbook_urls = {
     forward_progress = "https://github.com/org/repo/blob/main/docs/playbooks/alerts/ForwardProgressFailed.md"
     container_util   = "https://github.com/org/repo/blob/main/docs/playbooks/alerts/ContainerUtilization.md"
   }
 
+  enable_built_in_forward_progress_indicators = true
   built_in_forward_progress_indicators = {
     "request-count" = {
       metric                        = "request_count"
@@ -22,6 +23,7 @@ module "cloud_run_service_alerts" {
     },
   }
 
+  enable_built_in_container_indicators = true
   built_in_container_util_indicators = {
     "cpu" = {
       metric                        = "container/cpu/utilizations"
@@ -39,9 +41,10 @@ module "cloud_run_service_alerts" {
     },
   }
 
+  enable_log_based_text_indicators = true
   log_based_text_indicators = {
     "scaling-failure" = {
-      log_name_suffix      = "request"
+      log_name_suffix      = "requests"
       severity             = "ERROR"
       text_payload_message = "The request was aborted because there was no available instance."
       condition_threshold = {
@@ -52,6 +55,7 @@ module "cloud_run_service_alerts" {
     }
   }
 
+  enable_log_based_json_indicators = true
   log_based_json_indicators = {
     "email-bounce-failure" = {
       log_name_suffix      = "stdout"
@@ -67,18 +71,21 @@ module "cloud_run_service_alerts" {
   }
 
   service_4xx_configuration = {
+    enabled                       = true
     window                        = 300
     threshold                     = 0
     consecutive_window_violations = 1
   }
 
   service_5xx_configuration = {
+    enabled                       = true
     window                        = 300
     threshold                     = 0
     consecutive_window_violations = 1
   }
 
   service_latency_configuration = {
+    enabled                       = true
     window                        = 300
     threshold                     = 0
     consecutive_window_violations = 1
@@ -93,6 +100,7 @@ module "cloud_run_service_alerts" {
   }
 
   job_failure_configuration = {
+    enabled                       = false
     window                        = 300
     threshold                     = 0
     consecutive_window_violations = 1
