@@ -44,6 +44,18 @@ variable "runbook_urls" {
   })
 }
 
+variable "notification_channels_non_paging" {
+  description = "List of notification channels to alert."
+  type        = list(string)
+  default     = []
+}
+
+variable "enable_built_in_forward_progress_indicators" {
+  type        = bool
+  description = "A flag to enable or disable the creation of built in forward progress indicators."
+  default     = false
+}
+
 variable "built_in_forward_progress_indicators" {
   description = "Map for forward progress Cloud Run indicators. The window must be in seconds."
   type = map(object({
@@ -54,22 +66,27 @@ variable "built_in_forward_progress_indicators" {
   }))
 }
 
+variable "enable_built_in_container_indicators" {
+  type        = bool
+  description = "A flag to enable or disable the creation of built in container utilization indicators."
+  default     = false
+}
+
 variable "built_in_container_util_indicators" {
   description = "Map for Cloud Run container utilization indicators. The window must be in seconds. Threshold should be represented "
   type = map(object({
     metric                        = string
     window                        = number
     threshold                     = number
-    p_value                       = number
+    p_value                       = optional(number)
     consecutive_window_violations = number
   }))
-  validation {
-    condition = alltrue([
-      for k, v in var.built_in_container_util_indicators :
-      contains([50, 95, 99], v.p_value)
-    ])
-    error_message = "The 'p_value' field must be one of: 50, 95, 99."
-  }
+}
+
+variable "enable_log_based_text_indicators" {
+  type        = bool
+  description = "A flag to enable or disable the creation of log based text indicators."
+  default     = false
 }
 
 variable "log_based_text_indicators" {
@@ -88,11 +105,17 @@ variable "log_based_text_indicators" {
   validation {
     condition = alltrue([
       for k, v in var.log_based_text_indicators :
-      contains(["DEBUG", "INFO", "WARN", "ERROR"], v.severity)
+      contains(["DEBUG", "INFO", "WARNING", "ERROR"], v.severity)
     ])
-    error_message = "The 'severity' field must be one of: 'DEBUG', 'INFO', 'WARN', 'ERROR'."
+    error_message = "The 'severity' field must be one of: 'DEBUG', 'INFO', 'WARNING', 'ERROR'."
   }
   default = {}
+}
+
+variable "enable_log_based_json_indicators" {
+  type        = bool
+  description = "A flag to enable or disable the creation of log based JSON indicators."
+  default     = false
 }
 
 variable "log_based_json_indicators" {
@@ -111,27 +134,23 @@ variable "log_based_json_indicators" {
   validation {
     condition = alltrue([
       for k, v in var.log_based_json_indicators :
-      contains(["DEBUG", "INFO", "WARN", "ERROR"], v.severity)
+      contains(["DEBUG", "INFO", "WARNING", "ERROR"], v.severity)
     ])
-    error_message = "The 'severity' field must be one of: 'DEBUG', 'INFO', 'WARN', 'ERROR'."
+    error_message = "The 'severity' field must be one of: 'DEBUG', 'INFO', 'WARNING', 'ERROR'."
   }
   default = {}
-}
-
-variable "notification_channels" {
-  description = "List of notification channels to alert."
-  type        = list(string)
-  default     = []
 }
 
 variable "service_4xx_configuration" {
   description = "Configuration applied to the 4xx alert policy. Only applies to services."
   type = object({
+    enabled                       = bool
     window                        = number
     threshold                     = number
     consecutive_window_violations = number
   })
   default = {
+    enabled                       = true
     window                        = 300
     threshold                     = 0
     consecutive_window_violations = 2
@@ -141,11 +160,13 @@ variable "service_4xx_configuration" {
 variable "service_5xx_configuration" {
   description = "Configuration applied to the 5xx alert policy. Only applies to services."
   type = object({
+    enabled                       = bool
     window                        = number
     threshold                     = number
     consecutive_window_violations = number
   })
   default = {
+    enabled                       = true
     window                        = 300
     threshold                     = 0
     consecutive_window_violations = 2
@@ -155,12 +176,14 @@ variable "service_5xx_configuration" {
 variable "service_latency_configuration" {
   description = "Configuration applied to the request latency alert policy. Only applies to services."
   type = object({
+    enabled                       = bool
     window                        = number
     threshold                     = number
     consecutive_window_violations = number
     p_value                       = number
   })
   default = {
+    enabled                       = true
     window                        = 300
     threshold                     = 0
     consecutive_window_violations = 2
@@ -175,12 +198,14 @@ variable "service_latency_configuration" {
 variable "service_max_conns_configuration" {
   description = "Configuration applied to the max connections alert policy. Only applies to services."
   type = object({
+    enabled                       = bool
     window                        = number
     threshold                     = number
     consecutive_window_violations = number
     p_value                       = number
   })
   default = {
+    enabled                       = true
     window                        = 300
     threshold                     = 0
     consecutive_window_violations = 2
@@ -195,11 +220,13 @@ variable "service_max_conns_configuration" {
 variable "job_failure_configuration" {
   description = "Configuration applied to the job failure alert policy. Only applies to jobs."
   type = object({
+    enabled                       = bool
     window                        = number
     threshold                     = number
     consecutive_window_violations = number
   })
   default = {
+    enabled                       = true
     window                        = 300
     threshold                     = 0
     consecutive_window_violations = 1

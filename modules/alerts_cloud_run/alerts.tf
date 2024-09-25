@@ -35,11 +35,13 @@ locals {
 # Common forward progress #
 
 resource "google_monitoring_alert_policy" "forward_progress_alert_policy" {
+  count = var.enable_built_in_forward_progress_indicators ? 1 : 0
+
   project = var.project_id
 
   display_name = "ForwardProgress-${local.resource_value}"
+  severity     = "ERROR"
   combiner     = "OR"
-
   dynamic "conditions" {
     for_each = var.built_in_forward_progress_indicators
 
@@ -111,15 +113,18 @@ resource "google_monitoring_alert_policy" "forward_progress_alert_policy" {
     }
   }
 
-  notification_channels = var.notification_channels
+  notification_channels = var.notification_channels_non_paging
 }
 
 # Common container utilization #
 
 resource "google_monitoring_alert_policy" "container_util_alert_policy" {
+  count = var.enable_built_in_container_indicators ? 1 : 0
+
   project = var.project_id
 
   display_name = "ContainerUtilization-${local.resource_value}"
+  severity     = "ERROR"
   combiner     = "OR"
 
   dynamic "conditions" {
@@ -141,8 +146,8 @@ resource "google_monitoring_alert_policy" "container_util_alert_policy" {
 
         aggregations {
           alignment_period     = "60s"
-          per_series_aligner   = "ALIGN_PERCENTILE_${conditions.value.p_value}"
-          cross_series_reducer = "REDUCE_PERCENTILE_${conditions.value.p_value}"
+          per_series_aligner   = conditions.value.p_value != null ? "ALIGN_PERCENTILE_${conditions.value.p_value}" : "ALIGN_MAX"
+          cross_series_reducer = conditions.value.p_value != null ? "REDUCE_PERCENTILE_${conditions.value.p_value}" : "REDUCE_SUM"
           group_by_fields      = local.default_group_by_fields
         }
 
@@ -169,7 +174,7 @@ resource "google_monitoring_alert_policy" "container_util_alert_policy" {
     }
   }
 
-  notification_channels = var.notification_channels
+  notification_channels = var.notification_channels_non_paging
 }
 
 # Common log based #
@@ -211,11 +216,12 @@ resource "google_logging_metric" "text_payload_logging_metric" {
 }
 
 resource "google_monitoring_alert_policy" "text_payload_logging_alert_policy" {
-  count = length(keys(var.log_based_text_indicators)) > 0 ? 1 : 0
+  count = length(keys(var.log_based_text_indicators)) > 0 && var.enable_log_based_text_indicators ? 1 : 0
 
   project = var.project_id
 
   display_name = "LogBasedText-${local.resource_value}"
+  severity     = "ERROR"
   combiner     = "OR"
 
   dynamic "conditions" {
@@ -250,8 +256,8 @@ resource "google_monitoring_alert_policy" "text_payload_logging_alert_policy" {
   alert_strategy {
     auto_close = "${local.day}s"
 
-    notification_rate_limit {
-      period = "${local.day}s"
+    notification_channel_strategy {
+      renotify_interval = "${local.day}s"
     }
   }
 
@@ -263,7 +269,11 @@ resource "google_monitoring_alert_policy" "text_payload_logging_alert_policy" {
     }
   }
 
-  notification_channels = var.notification_channels
+  notification_channels = var.notification_channels_non_paging
+
+  depends_on = [
+    google_logging_metric.text_payload_logging_metric
+  ]
 }
 
 resource "google_logging_metric" "json_payload_logging_metric" {
@@ -303,11 +313,12 @@ resource "google_logging_metric" "json_payload_logging_metric" {
 }
 
 resource "google_monitoring_alert_policy" "json_payload_logging_alert_policy" {
-  count = length(keys(var.log_based_json_indicators)) > 0 ? 1 : 0
+  count = length(keys(var.log_based_json_indicators)) > 0 && var.enable_log_based_json_indicators ? 1 : 0
 
   project = var.project_id
 
   display_name = "LogBasedJSON-${local.resource_value}"
+  severity     = "ERROR"
   combiner     = "OR"
 
   dynamic "conditions" {
@@ -343,8 +354,8 @@ resource "google_monitoring_alert_policy" "json_payload_logging_alert_policy" {
   alert_strategy {
     auto_close = "${local.day}s"
 
-    notification_rate_limit {
-      period = "${local.day}s"
+    notification_channel_strategy {
+      renotify_interval = "${local.day}s"
     }
   }
 
@@ -356,17 +367,22 @@ resource "google_monitoring_alert_policy" "json_payload_logging_alert_policy" {
     }
   }
 
-  notification_channels = var.notification_channels
+  notification_channels = var.notification_channels_non_paging
+
+  depends_on = [
+    google_logging_metric.json_payload_logging_metric
+  ]
 }
 
 # CR service specific # 
 
 resource "google_monitoring_alert_policy" "service_4xx_alert_policy" {
-  count = !local.is_job ? 1 : 0
+  count = !local.is_job && var.service_4xx_configuration.enabled ? 1 : 0
 
   project = var.project_id
 
   display_name = "4xx-${local.resource_value}"
+  severity     = "ERROR"
   combiner     = "OR"
 
   conditions {
@@ -414,15 +430,16 @@ resource "google_monitoring_alert_policy" "service_4xx_alert_policy" {
     }
   }
 
-  notification_channels = var.notification_channels
+  notification_channels = var.notification_channels_non_paging
 }
 
 resource "google_monitoring_alert_policy" "service_5xx_alert_policy" {
-  count = !local.is_job ? 1 : 0
+  count = !local.is_job && var.service_5xx_configuration.enabled ? 1 : 0
 
   project = var.project_id
 
   display_name = "5xx-${local.resource_value}"
+  severity     = "ERROR"
   combiner     = "OR"
 
   conditions {
@@ -470,15 +487,16 @@ resource "google_monitoring_alert_policy" "service_5xx_alert_policy" {
     }
   }
 
-  notification_channels = var.notification_channels
+  notification_channels = var.notification_channels_non_paging
 }
 
 resource "google_monitoring_alert_policy" "service_latency_alert_policy" {
-  count = !local.is_job ? 1 : 0
+  count = !local.is_job && var.service_latency_configuration.enabled ? 1 : 0
 
   project = var.project_id
 
   display_name = "Latency-${local.resource_value}"
+  severity     = "ERROR"
   combiner     = "OR"
 
   conditions {
@@ -524,15 +542,16 @@ resource "google_monitoring_alert_policy" "service_latency_alert_policy" {
     }
   }
 
-  notification_channels = var.notification_channels
+  notification_channels = var.notification_channels_non_paging
 }
 
 resource "google_monitoring_alert_policy" "service_max_conns_alert_policy" {
-  count = !local.is_job ? 1 : 0
+  count = !local.is_job && var.service_max_conns_configuration.enabled ? 1 : 0
 
   project = var.project_id
 
   display_name = "Max-Connections-${local.resource_value}"
+  severity     = "ERROR"
   combiner     = "OR"
 
   conditions {
@@ -578,17 +597,18 @@ resource "google_monitoring_alert_policy" "service_max_conns_alert_policy" {
     }
   }
 
-  notification_channels = var.notification_channels
+  notification_channels = var.notification_channels_non_paging
 }
 
 # CR job specific #
 
 resource "google_monitoring_alert_policy" "job_failure_alert_policy" {
-  count = local.is_job ? 1 : 0
+  count = local.is_job && var.job_failure_configuration.enabled ? 1 : 0
 
   project = var.project_id
 
   display_name = "FailedJobExecution-${local.resource_value}"
+  severity     = "ERROR"
   combiner     = "OR"
 
   conditions {
@@ -636,5 +656,5 @@ resource "google_monitoring_alert_policy" "job_failure_alert_policy" {
     }
   }
 
-  notification_channels = var.notification_channels
+  notification_channels = var.notification_channels_non_paging
 }
