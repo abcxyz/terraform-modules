@@ -53,7 +53,7 @@ variable "notification_channels_non_paging" {
 variable "enable_built_in_forward_progress_indicators" {
   type        = bool
   description = "A flag to enable or disable the creation of built in forward progress indicators."
-  default     = false
+  default     = true
 }
 
 variable "built_in_forward_progress_indicators" {
@@ -69,7 +69,7 @@ variable "built_in_forward_progress_indicators" {
 variable "enable_built_in_container_indicators" {
   type        = bool
   description = "A flag to enable or disable the creation of built in container utilization indicators."
-  default     = false
+  default     = true
 }
 
 variable "built_in_container_util_indicators" {
@@ -86,7 +86,7 @@ variable "built_in_container_util_indicators" {
 variable "enable_log_based_text_indicators" {
   type        = bool
   description = "A flag to enable or disable the creation of log based text indicators."
-  default     = false
+  default     = true
 }
 
 variable "log_based_text_indicators" {
@@ -115,7 +115,7 @@ variable "log_based_text_indicators" {
 variable "enable_log_based_json_indicators" {
   type        = bool
   description = "A flag to enable or disable the creation of log based JSON indicators."
-  default     = false
+  default     = true
 }
 
 variable "log_based_json_indicators" {
