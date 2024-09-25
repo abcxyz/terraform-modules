@@ -13,6 +13,7 @@ module "cloud_run_service_alerts" {
     container_util   = "https://github.com/org/repo/blob/main/docs/playbooks/alerts/ContainerUtilization.md"
   }
 
+  enable_built_in_forward_progress_indicators = true
   built_in_forward_progress_indicators = {
     "request-count" = {
       metric                        = "request_count"
@@ -21,6 +22,8 @@ module "cloud_run_service_alerts" {
       consecutive_window_violations = 1
     },
   }
+
+  enable_built_in_container_indicators = true
   built_in_container_util_indicators = {
     "cpu" = {
       metric                        = "container/cpu/utilizations"
@@ -37,6 +40,8 @@ module "cloud_run_service_alerts" {
       consecutive_window_violations = 1
     },
   }
+
+  enable_log_based_text_indicators = true
   log_based_text_indicators = {
     "scaling-failure" = {
       log_name_suffix      = "requests"
@@ -49,6 +54,8 @@ module "cloud_run_service_alerts" {
       }
     }
   }
+
+  enable_log_based_json_indicators = true
   log_based_json_indicators = {
     "email-bounce-failure" = {
       log_name_suffix      = "stdout"
