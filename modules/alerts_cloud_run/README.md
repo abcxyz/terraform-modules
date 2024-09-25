@@ -17,7 +17,6 @@ module "cloud_run_service_alerts" {
     container_util   = "https://github.com/org/repo/blob/main/docs/playbooks/alerts/ContainerUtilization.md"
   }
 
-  enable_built_in_forward_progress_indicators = true
   built_in_forward_progress_indicators = {
     "request-count" = {
       metric                        = "request_count"
@@ -26,8 +25,6 @@ module "cloud_run_service_alerts" {
       consecutive_window_violations = 1
     },
   }
-
-  enable_built_in_container_indicators = true
   built_in_container_util_indicators = {
     "cpu" = {
       metric                        = "container/cpu/utilizations"
@@ -44,8 +41,6 @@ module "cloud_run_service_alerts" {
       consecutive_window_violations = 1
     },
   }
-
-  enable_log_based_text_indicators = true
   log_based_text_indicators = {
     "scaling-failure" = {
       log_name_suffix      = "requests"
@@ -58,8 +53,6 @@ module "cloud_run_service_alerts" {
       }
     }
   }
-
-  enable_log_based_json_indicators = true
   log_based_json_indicators = {
     "email-bounce-failure" = {
       log_name_suffix      = "stdout"
@@ -119,10 +112,10 @@ module "cloud_run_service_alerts" {
 | <a name="input_built_in_container_util_indicators"></a> [built\_in\_container\_util\_indicators](#input\_built\_in\_container\_util\_indicators) | Map for Cloud Run container utilization indicators. The window must be in seconds. Threshold should be represented | <pre>map(object({<br>    metric                        = string<br>    window                        = number<br>    threshold                     = number<br>    p_value                       = optional(number)<br>    consecutive_window_violations = number<br>  }))</pre> | n/a | yes |
 | <a name="input_built_in_forward_progress_indicators"></a> [built\_in\_forward\_progress\_indicators](#input\_built\_in\_forward\_progress\_indicators) | Map for forward progress Cloud Run indicators. The window must be in seconds. | <pre>map(object({<br>    metric                        = string<br>    window                        = number<br>    threshold                     = number<br>    consecutive_window_violations = number<br>  }))</pre> | n/a | yes |
 | <a name="input_cloud_run_resource"></a> [cloud\_run\_resource](#input\_cloud\_run\_resource) | One of either service name or job name which will dictate the Cloud Run resource to monitor. | <pre>object({<br>    service_name = optional(string)<br>    job_name     = optional(string)<br>  })</pre> | n/a | yes |
-| <a name="input_enable_built_in_container_indicators"></a> [enable\_built\_in\_container\_indicators](#input\_enable\_built\_in\_container\_indicators) | A flag to enable or disable the creation of built in container utilization indicators. | `bool` | `false` | no |
-| <a name="input_enable_built_in_forward_progress_indicators"></a> [enable\_built\_in\_forward\_progress\_indicators](#input\_enable\_built\_in\_forward\_progress\_indicators) | A flag to enable or disable the creation of built in forward progress indicators. | `bool` | `false` | no |
-| <a name="input_enable_log_based_json_indicators"></a> [enable\_log\_based\_json\_indicators](#input\_enable\_log\_based\_json\_indicators) | A flag to enable or disable the creation of log based JSON indicators. | `bool` | `false` | no |
-| <a name="input_enable_log_based_text_indicators"></a> [enable\_log\_based\_text\_indicators](#input\_enable\_log\_based\_text\_indicators) | A flag to enable or disable the creation of log based text indicators. | `bool` | `false` | no |
+| <a name="input_enable_built_in_container_indicators"></a> [enable\_built\_in\_container\_indicators](#input\_enable\_built\_in\_container\_indicators) | A flag to enable or disable the creation of built in container utilization indicators. | `bool` | `true` | no |
+| <a name="input_enable_built_in_forward_progress_indicators"></a> [enable\_built\_in\_forward\_progress\_indicators](#input\_enable\_built\_in\_forward\_progress\_indicators) | A flag to enable or disable the creation of built in forward progress indicators. | `bool` | `true` | no |
+| <a name="input_enable_log_based_json_indicators"></a> [enable\_log\_based\_json\_indicators](#input\_enable\_log\_based\_json\_indicators) | A flag to enable or disable the creation of log based JSON indicators. | `bool` | `true` | no |
+| <a name="input_enable_log_based_text_indicators"></a> [enable\_log\_based\_text\_indicators](#input\_enable\_log\_based\_text\_indicators) | A flag to enable or disable the creation of log based text indicators. | `bool` | `true` | no |
 | <a name="input_job_failure_configuration"></a> [job\_failure\_configuration](#input\_job\_failure\_configuration) | Configuration applied to the job failure alert policy. Only applies to jobs. | <pre>object({<br>    enabled                       = bool<br>    window                        = number<br>    threshold                     = number<br>    consecutive_window_violations = number<br>  })</pre> | <pre>{<br>  "consecutive_window_violations": 1,<br>  "enabled": true,<br>  "threshold": 0,<br>  "window": 300<br>}</pre> | no |
 | <a name="input_log_based_json_indicators"></a> [log\_based\_json\_indicators](#input\_log\_based\_json\_indicators) | Map for log based indicators using JSON payload. Payload message is a regex match. | <pre>map(object({<br>    log_name_suffix      = string<br>    severity             = string<br>    json_payload_message = string<br>    condition_threshold = object({<br>      window                        = number<br>      threshold                     = number<br>      consecutive_window_violations = number<br>    })<br>    additional_filters = optional(string)<br>  }))</pre> | `{}` | no |
 | <a name="input_log_based_text_indicators"></a> [log\_based\_text\_indicators](#input\_log\_based\_text\_indicators) | Map for log based indicators using text payload. Payload message is a regex match. | <pre>map(object({<br>    log_name_suffix      = string<br>    severity             = string<br>    text_payload_message = string<br>    condition_threshold = object({<br>      window                        = number<br>      threshold                     = number<br>      consecutive_window_violations = number<br>    })<br>    additional_filters = optional(string)<br>  }))</pre> | `{}` | no |
