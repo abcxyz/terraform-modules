@@ -16,28 +16,25 @@ module "cloud_run_service_alerts" {
   enable_built_in_forward_progress_indicators = true
   built_in_forward_progress_indicators = {
     "request-count" = {
-      metric                        = "request_count"
-      window                        = 2 * local.hour + 10 * local.minute
-      threshold                     = 1
-      consecutive_window_violations = 1
+      metric    = "request_count"
+      window    = 2 * local.hour + 10 * local.minute
+      threshold = 1
     },
   }
 
   enable_built_in_container_indicators = true
   built_in_container_util_indicators = {
     "cpu" = {
-      metric                        = "container/cpu/utilizations"
-      window                        = 10 * local.minute
-      threshold                     = 0.8
-      p_value                       = 99
-      consecutive_window_violations = 1
+      metric    = "container/cpu/utilizations"
+      window    = 10 * local.minute
+      threshold = 0.8
+      p_value   = 99
     },
     "memory" = {
-      metric                        = "container/memory/utilizations"
-      window                        = 10 * local.minute
-      threshold                     = 0.8
-      p_value                       = 99
-      consecutive_window_violations = 1
+      metric    = "container/memory/utilizations"
+      window    = 10 * local.minute
+      threshold = 0.8
+      p_value   = 99
     },
   }
 
@@ -48,9 +45,8 @@ module "cloud_run_service_alerts" {
       severity             = "ERROR"
       text_payload_message = "The request was aborted because there was no available instance."
       condition_threshold = {
-        window                        = 10 * local.minute
-        threshold                     = 1
-        consecutive_window_violations = 1
+        window    = 10 * local.minute
+        threshold = 1
       }
     }
   }
@@ -63,46 +59,40 @@ module "cloud_run_service_alerts" {
       json_payload_message = "Failed.*"
       additional_filters   = "jsonPayload.method=<your_method_name>"
       condition_threshold = {
-        window                        = 10 * local.minute
-        threshold                     = 0
-        consecutive_window_violations = 1
+        window    = 10 * local.minute
+        threshold = 0
       }
     }
   }
 
   service_4xx_configuration = {
-    enabled                       = true
-    window                        = 300
-    threshold                     = 0
-    consecutive_window_violations = 1
+    enabled   = true
+    window    = 300
+    threshold = 0
   }
 
   service_5xx_configuration = {
-    enabled                       = true
-    window                        = 300
-    threshold                     = 0
-    consecutive_window_violations = 1
+    enabled   = true
+    window    = 300
+    threshold = 0
   }
 
   service_latency_configuration = {
-    enabled                       = true
-    window                        = 300
-    threshold                     = 0
-    consecutive_window_violations = 1
-    p_value                       = 95
+    enabled   = true
+    window    = 300
+    threshold = 0
+    p_value   = 95
   }
 
   service_max_conns_configuration = {
-    window                        = 300
-    threshold                     = 0
-    consecutive_window_violations = 1
-    p_value                       = 95
+    window    = 300
+    threshold = 0
+    p_value   = 95
   }
 
   job_failure_configuration = {
-    enabled                       = false
-    window                        = 300
-    threshold                     = 0
-    consecutive_window_violations = 1
+    enabled   = false
+    window    = 300
+    threshold = 0
   }
 }
