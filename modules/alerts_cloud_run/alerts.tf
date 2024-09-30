@@ -67,7 +67,7 @@ resource "google_monitoring_alert_policy" "forward_progress_alert_policy" {
         }
 
         trigger {
-          count = conditions.value.consecutive_window_violations
+          count = 1
         }
       }
     }
@@ -152,7 +152,7 @@ resource "google_monitoring_alert_policy" "container_util_alert_policy" {
         }
 
         trigger {
-          count = conditions.value.consecutive_window_violations
+          count = 1
         }
       }
     }
@@ -241,13 +241,13 @@ resource "google_monitoring_alert_policy" "text_payload_logging_alert_policy" {
 
         aggregations {
           alignment_period     = "60s"
-          per_series_aligner   = "ALIGN_DELTA"
+          per_series_aligner   = "ALIGN_SUM"
           cross_series_reducer = "REDUCE_SUM"
           group_by_fields      = local.default_group_by_fields
         }
 
         trigger {
-          count = conditions.value.condition_threshold.consecutive_window_violations
+          count = 1
         }
       }
     }
@@ -339,13 +339,13 @@ resource "google_monitoring_alert_policy" "json_payload_logging_alert_policy" {
 
         aggregations {
           alignment_period     = "60s"
-          per_series_aligner   = "ALIGN_DELTA"
+          per_series_aligner   = "ALIGN_SUM"
           cross_series_reducer = "REDUCE_SUM"
           group_by_fields      = local.default_group_by_fields
         }
 
         trigger {
-          count = conditions.value.condition_threshold.consecutive_window_violations
+          count = 1
         }
       }
     }
@@ -396,20 +396,19 @@ resource "google_monitoring_alert_policy" "service_4xx_alert_policy" {
         resource.label.${local.resource_label}="${local.resource_value}"
       EOT
 
-      duration                = "${var.service_4xx_configuration.window}s"
-      comparison              = "COMPARISON_GT"
-      threshold_value         = var.service_4xx_configuration.threshold
-      evaluation_missing_data = "EVALUATION_MISSING_DATA_INACTIVE"
+      duration        = "${var.service_4xx_configuration.window}s"
+      comparison      = "COMPARISON_GT"
+      threshold_value = var.service_4xx_configuration.threshold
 
       aggregations {
         alignment_period     = "60s"
-        per_series_aligner   = "ALIGN_DELTA"
+        per_series_aligner   = "ALIGN_SUM"
         cross_series_reducer = "REDUCE_SUM"
         group_by_fields      = local.default_group_by_fields
       }
 
       trigger {
-        count = var.service_4xx_configuration.consecutive_window_violations
+        count = 1
       }
     }
   }
@@ -453,20 +452,19 @@ resource "google_monitoring_alert_policy" "service_5xx_alert_policy" {
         resource.label.${local.resource_label}="${local.resource_value}"
       EOT
 
-      duration                = "${var.service_5xx_configuration.window}s"
-      comparison              = "COMPARISON_GT"
-      threshold_value         = var.service_5xx_configuration.threshold
-      evaluation_missing_data = "EVALUATION_MISSING_DATA_INACTIVE"
+      duration        = "${var.service_5xx_configuration.window}s"
+      comparison      = "COMPARISON_GT"
+      threshold_value = var.service_5xx_configuration.threshold
 
       aggregations {
         alignment_period     = "60s"
-        per_series_aligner   = "ALIGN_DELTA"
+        per_series_aligner   = "ALIGN_SUM"
         cross_series_reducer = "REDUCE_SUM"
         group_by_fields      = local.default_group_by_fields
       }
 
       trigger {
-        count = var.service_5xx_configuration.consecutive_window_violations
+        count = 1
       }
     }
   }
@@ -521,7 +519,7 @@ resource "google_monitoring_alert_policy" "service_latency_alert_policy" {
       }
 
       trigger {
-        count = var.service_latency_configuration.consecutive_window_violations
+        count = 1
       }
     }
   }
@@ -576,7 +574,7 @@ resource "google_monitoring_alert_policy" "service_max_conns_alert_policy" {
       }
 
       trigger {
-        count = var.service_max_conns_configuration.consecutive_window_violations
+        count = 1
       }
     }
   }
@@ -622,20 +620,18 @@ resource "google_monitoring_alert_policy" "job_failure_alert_policy" {
         resource.label.${local.resource_label}="${local.resource_value}"
       EOT
 
-      duration                = "${var.job_failure_configuration.window}s"
-      comparison              = "COMPARISON_GT"
-      threshold_value         = var.job_failure_configuration.threshold
-      evaluation_missing_data = "EVALUATION_MISSING_DATA_INACTIVE"
-
+      duration        = "${var.job_failure_configuration.window}s"
+      comparison      = "COMPARISON_GT"
+      threshold_value = var.job_failure_configuration.threshold
       aggregations {
         alignment_period     = "60s"
-        per_series_aligner   = "ALIGN_DELTA"
+        per_series_aligner   = "ALIGN_SUM"
         cross_series_reducer = "REDUCE_SUM"
         group_by_fields      = local.default_group_by_fields
       }
 
       trigger {
-        count = var.job_failure_configuration.consecutive_window_violations
+        count = 1
       }
     }
   }

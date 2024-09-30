@@ -59,10 +59,9 @@ variable "enable_built_in_forward_progress_indicators" {
 variable "built_in_forward_progress_indicators" {
   description = "Map for forward progress Cloud Run indicators. The window must be in seconds."
   type = map(object({
-    metric                        = string
-    window                        = number
-    threshold                     = number
-    consecutive_window_violations = number
+    metric    = string
+    window    = number
+    threshold = number
   }))
 }
 
@@ -75,11 +74,10 @@ variable "enable_built_in_container_indicators" {
 variable "built_in_container_util_indicators" {
   description = "Map for Cloud Run container utilization indicators. The window must be in seconds. Threshold should be represented "
   type = map(object({
-    metric                        = string
-    window                        = number
-    threshold                     = number
-    p_value                       = optional(number)
-    consecutive_window_violations = number
+    metric    = string
+    window    = number
+    threshold = number
+    p_value   = optional(number)
   }))
 }
 
@@ -96,9 +94,8 @@ variable "log_based_text_indicators" {
     severity             = string
     text_payload_message = string
     condition_threshold = object({
-      window                        = number
-      threshold                     = number
-      consecutive_window_violations = number
+      window    = number
+      threshold = number
     })
     additional_filters = optional(string)
   }))
@@ -125,9 +122,8 @@ variable "log_based_json_indicators" {
     severity             = string
     json_payload_message = string
     condition_threshold = object({
-      window                        = number
-      threshold                     = number
-      consecutive_window_violations = number
+      window    = number
+      threshold = number
     })
     additional_filters = optional(string)
   }))
@@ -144,50 +140,44 @@ variable "log_based_json_indicators" {
 variable "service_4xx_configuration" {
   description = "Configuration applied to the 4xx alert policy. Only applies to services."
   type = object({
-    enabled                       = bool
-    window                        = number
-    threshold                     = number
-    consecutive_window_violations = number
+    enabled   = bool
+    window    = number
+    threshold = number
   })
   default = {
-    enabled                       = true
-    window                        = 300
-    threshold                     = 0
-    consecutive_window_violations = 2
+    enabled   = true
+    window    = 300
+    threshold = 0
   }
 }
 
 variable "service_5xx_configuration" {
   description = "Configuration applied to the 5xx alert policy. Only applies to services."
   type = object({
-    enabled                       = bool
-    window                        = number
-    threshold                     = number
-    consecutive_window_violations = number
+    enabled   = bool
+    window    = number
+    threshold = number
   })
   default = {
-    enabled                       = true
-    window                        = 300
-    threshold                     = 0
-    consecutive_window_violations = 2
+    enabled   = true
+    window    = 300
+    threshold = 0
   }
 }
 
 variable "service_latency_configuration" {
   description = "Configuration applied to the request latency alert policy. Only applies to services."
   type = object({
-    enabled                       = bool
-    window                        = number
-    threshold                     = number
-    consecutive_window_violations = number
-    p_value                       = number
+    enabled   = bool
+    window    = number
+    threshold = number
+    p_value   = number
   })
   default = {
-    enabled                       = true
-    window                        = 300
-    threshold                     = 0
-    consecutive_window_violations = 2
-    p_value                       = 95
+    enabled   = true
+    window    = 300
+    threshold = 0
+    p_value   = 95
   }
   validation {
     condition     = contains([50, 95, 99], var.service_latency_configuration.p_value)
@@ -198,18 +188,16 @@ variable "service_latency_configuration" {
 variable "service_max_conns_configuration" {
   description = "Configuration applied to the max connections alert policy. Only applies to services."
   type = object({
-    enabled                       = bool
-    window                        = number
-    threshold                     = number
-    consecutive_window_violations = number
-    p_value                       = number
+    enabled   = bool
+    window    = number
+    threshold = number
+    p_value   = number
   })
   default = {
-    enabled                       = true
-    window                        = 300
-    threshold                     = 0
-    consecutive_window_violations = 2
-    p_value                       = 95
+    enabled   = true
+    window    = 300
+    threshold = 0
+    p_value   = 95
   }
   validation {
     condition     = contains([50, 95, 99], var.service_max_conns_configuration.p_value)
@@ -220,15 +208,13 @@ variable "service_max_conns_configuration" {
 variable "job_failure_configuration" {
   description = "Configuration applied to the job failure alert policy. Only applies to jobs."
   type = object({
-    enabled                       = bool
-    window                        = number
-    threshold                     = number
-    consecutive_window_violations = number
+    enabled   = bool
+    window    = number
+    threshold = number
   })
   default = {
-    enabled                       = true
-    window                        = 300
-    threshold                     = 0
-    consecutive_window_violations = 1
+    enabled   = true
+    window    = 300
+    threshold = 0
   }
 }
