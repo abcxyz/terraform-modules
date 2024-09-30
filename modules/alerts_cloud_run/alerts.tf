@@ -50,9 +50,10 @@ resource "google_monitoring_alert_policy" "forward_progress_alert_policy" {
 
       condition_threshold {
         filter = <<-EOT
-          metric.type="${local.metric_root_prefix}/${conditions.value.metric}" 
+          metric.type="${local.metric_root_prefix}/${conditions.value.metric}"
           resource.type="${local.resource_type}"
           resource.label.${local.resource_label}="${local.resource_value}"
+          ${conditions.value.additional_filters != null ? conditions.value.additional_filters : ""}
         EOT
 
         duration        = "${conditions.value.window}s"
@@ -63,7 +64,7 @@ resource "google_monitoring_alert_policy" "forward_progress_alert_policy" {
           alignment_period     = "60s"
           per_series_aligner   = "ALIGN_DELTA"
           cross_series_reducer = "REDUCE_SUM"
-          group_by_fields      = local.default_group_by_fields
+          group_by_fields      = distinct(concat(local.default_group_by_fields, conditions.value.additional_group_by_fields != null ? conditions.value.additional_group_by_fields : []))
         }
 
         trigger {
@@ -80,9 +81,10 @@ resource "google_monitoring_alert_policy" "forward_progress_alert_policy" {
 
       condition_absent {
         filter = <<-EOT
-          metric.type="${local.metric_root_prefix}/${conditions.value.metric}" 
-          resource.type="${local.resource_type}" 
+          metric.type="${local.metric_root_prefix}/${conditions.value.metric}"
+          resource.type="${local.resource_type}"
           resource.label.${local.resource_label}="${local.resource_value}"
+          ${conditions.value.additional_filters != null ? conditions.value.additional_filters : ""}
         EOT
 
         duration = "${conditions.value.window}s"
@@ -91,7 +93,7 @@ resource "google_monitoring_alert_policy" "forward_progress_alert_policy" {
           alignment_period     = "60s"
           per_series_aligner   = "ALIGN_DELTA"
           cross_series_reducer = "REDUCE_SUM"
-          group_by_fields      = local.default_group_by_fields
+          group_by_fields      = distinct(concat(local.default_group_by_fields, conditions.value.additional_group_by_fields != null ? conditions.value.additional_group_by_fields : []))
         }
       }
     }
@@ -135,9 +137,10 @@ resource "google_monitoring_alert_policy" "container_util_alert_policy" {
 
       condition_threshold {
         filter = <<-EOT
-          metric.type="${local.metric_root}/${conditions.value.metric}" 
-          resource.type="${local.resource_type}" 
+          metric.type="${local.metric_root}/${conditions.value.metric}"
+          resource.type="${local.resource_type}"
           resource.label.${local.resource_label}="${local.resource_value}"
+          ${conditions.value.additional_filters != null ? conditions.value.additional_filters : ""}
         EOT
 
         duration        = "${conditions.value.window}s"
@@ -148,7 +151,7 @@ resource "google_monitoring_alert_policy" "container_util_alert_policy" {
           alignment_period     = "60s"
           per_series_aligner   = conditions.value.p_value != null ? "ALIGN_PERCENTILE_${conditions.value.p_value}" : "ALIGN_MAX"
           cross_series_reducer = conditions.value.p_value != null ? "REDUCE_PERCENTILE_${conditions.value.p_value}" : "REDUCE_SUM"
-          group_by_fields      = local.default_group_by_fields
+          group_by_fields      = distinct(concat(local.default_group_by_fields, conditions.value.additional_group_by_fields != null ? conditions.value.additional_group_by_fields : []))
         }
 
         trigger {
@@ -231,7 +234,7 @@ resource "google_monitoring_alert_policy" "text_payload_logging_alert_policy" {
 
       condition_threshold {
         filter = <<-EOT
-        metric.type="${local.user_metric_root_prefix}/${local.resource_value}-${conditions.key}" 
+        metric.type="${local.user_metric_root_prefix}/${local.resource_value}-${conditions.key}"
         resource.type="${local.resource_type}"
       EOT
 
@@ -243,7 +246,7 @@ resource "google_monitoring_alert_policy" "text_payload_logging_alert_policy" {
           alignment_period     = "60s"
           per_series_aligner   = "ALIGN_SUM"
           cross_series_reducer = "REDUCE_SUM"
-          group_by_fields      = local.default_group_by_fields
+          group_by_fields      = distinct(concat(local.default_group_by_fields, conditions.value.additional_group_by_fields != null ? conditions.value.additional_group_by_fields : []))
         }
 
         trigger {
@@ -287,7 +290,6 @@ resource "google_logging_metric" "json_payload_logging_metric" {
     resource.type=${local.resource_type}
     log_name="projects/${var.project_id}/logs/${local.metric_root}%2F${replace(each.value.log_name_suffix, "/", "%2F")}"
     severity=${each.value.severity}
-    jsonPayload.message=~"${each.value.json_payload_message}"
     ${each.value.additional_filters != null ? each.value.additional_filters : ""}
   EOT
 
@@ -329,7 +331,7 @@ resource "google_monitoring_alert_policy" "json_payload_logging_alert_policy" {
 
       condition_threshold {
         filter = <<-EOT
-            metric.type="${local.user_metric_root_prefix}/${local.resource_value}-${conditions.key}" 
+            metric.type="${local.user_metric_root_prefix}/${local.resource_value}-${conditions.key}"
             resource.type="${local.resource_type}"
           EOT
 
@@ -341,7 +343,7 @@ resource "google_monitoring_alert_policy" "json_payload_logging_alert_policy" {
           alignment_period     = "60s"
           per_series_aligner   = "ALIGN_SUM"
           cross_series_reducer = "REDUCE_SUM"
-          group_by_fields      = local.default_group_by_fields
+          group_by_fields      = distinct(concat(local.default_group_by_fields, conditions.value.additional_group_by_fields != null ? conditions.value.additional_group_by_fields : []))
         }
 
         trigger {
@@ -390,10 +392,11 @@ resource "google_monitoring_alert_policy" "service_4xx_alert_policy" {
 
     condition_threshold {
       filter = <<-EOT
-        metric.type="${local.metric_root_prefix}/request_count" 
+        metric.type="${local.metric_root_prefix}/request_count"
         metric.label.response_code_class="4xx"
         resource.type="${local.resource_type}"
         resource.label.${local.resource_label}="${local.resource_value}"
+        ${var.service_4xx_configuration.additional_filters != null ? var.service_4xx_configuration.additional_filters : ""}
       EOT
 
       duration        = "${var.service_4xx_configuration.window}s"
@@ -404,7 +407,7 @@ resource "google_monitoring_alert_policy" "service_4xx_alert_policy" {
         alignment_period     = "60s"
         per_series_aligner   = "ALIGN_SUM"
         cross_series_reducer = "REDUCE_SUM"
-        group_by_fields      = local.default_group_by_fields
+        group_by_fields      = distinct(concat(local.default_group_by_fields, var.service_4xx_configuration.additional_group_by_fields != null ? var.service_4xx_configuration.additional_group_by_fields : []))
       }
 
       trigger {
@@ -446,10 +449,11 @@ resource "google_monitoring_alert_policy" "service_5xx_alert_policy" {
 
     condition_threshold {
       filter = <<-EOT
-        metric.type="${local.metric_root_prefix}/request_count" 
+        metric.type="${local.metric_root_prefix}/request_count"
         metric.label.response_code_class="5xx"
         resource.type="${local.resource_type}"
         resource.label.${local.resource_label}="${local.resource_value}"
+        ${var.service_5xx_configuration.additional_filters != null ? var.service_5xx_configuration.additional_filters : ""}
       EOT
 
       duration        = "${var.service_5xx_configuration.window}s"
@@ -460,7 +464,7 @@ resource "google_monitoring_alert_policy" "service_5xx_alert_policy" {
         alignment_period     = "60s"
         per_series_aligner   = "ALIGN_SUM"
         cross_series_reducer = "REDUCE_SUM"
-        group_by_fields      = local.default_group_by_fields
+        group_by_fields      = distinct(concat(local.default_group_by_fields, var.service_5xx_configuration.additional_group_by_fields != null ? var.service_5xx_configuration.additional_group_by_fields : []))
       }
 
       trigger {
@@ -502,9 +506,10 @@ resource "google_monitoring_alert_policy" "service_latency_alert_policy" {
 
     condition_threshold {
       filter = <<-EOT
-        metric.type="${local.metric_root_prefix}/request_latencies" 
+        metric.type="${local.metric_root_prefix}/request_latencies"
         resource.type="${local.resource_type}"
         resource.label.${local.resource_label}="${local.resource_value}"
+        ${var.service_latency_configuration.additional_filters != null ? var.service_latency_configuration.additional_filters : ""}
       EOT
 
       duration        = "${var.service_latency_configuration.window}s"
@@ -515,7 +520,7 @@ resource "google_monitoring_alert_policy" "service_latency_alert_policy" {
         alignment_period     = "60s"
         per_series_aligner   = "ALIGN_PERCENTILE_${var.service_latency_configuration.p_value}"
         cross_series_reducer = "REDUCE_PERCENTILE_${var.service_latency_configuration.p_value}"
-        group_by_fields      = local.default_group_by_fields
+        group_by_fields      = distinct(concat(local.default_group_by_fields, var.service_latency_configuration.additional_group_by_fields != null ? var.service_latency_configuration.additional_group_by_fields : []))
       }
 
       trigger {
@@ -557,9 +562,10 @@ resource "google_monitoring_alert_policy" "service_max_conns_alert_policy" {
 
     condition_threshold {
       filter = <<-EOT
-        metric.type="${local.metric_root_prefix}/container/max_request_concurrencies" 
+        metric.type="${local.metric_root_prefix}/container/max_request_concurrencies"
         resource.type="${local.resource_type}"
         resource.label.${local.resource_label}="${local.resource_value}"
+        ${var.service_max_conns_configuration.additional_filters != null ? var.service_max_conns_configuration.additional_filters : ""}        
       EOT
 
       duration        = "${var.service_max_conns_configuration.window}s"
@@ -570,7 +576,7 @@ resource "google_monitoring_alert_policy" "service_max_conns_alert_policy" {
         alignment_period     = "60s"
         per_series_aligner   = "ALIGN_PERCENTILE_${var.service_max_conns_configuration.p_value}"
         cross_series_reducer = "REDUCE_PERCENTILE_${var.service_max_conns_configuration.p_value}"
-        group_by_fields      = local.default_group_by_fields
+        group_by_fields      = distinct(concat(local.default_group_by_fields, var.service_max_conns_configuration.additional_group_by_fields != null ? var.service_max_conns_configuration.additional_group_by_fields : []))
       }
 
       trigger {
@@ -614,10 +620,11 @@ resource "google_monitoring_alert_policy" "job_failure_alert_policy" {
 
     condition_threshold {
       filter = <<-EOT
-        metric.type="${local.metric_root_prefix}/completed_execution_count" 
+        metric.type="${local.metric_root_prefix}/completed_execution_count"
         metric.label.result="failed"
         resource.type="${local.resource_type}"
         resource.label.${local.resource_label}="${local.resource_value}"
+        ${var.job_failure_configuration.additional_filters != null ? var.job_failure_configuration.additional_filters : ""}        
       EOT
 
       duration        = "${var.job_failure_configuration.window}s"
@@ -627,7 +634,7 @@ resource "google_monitoring_alert_policy" "job_failure_alert_policy" {
         alignment_period     = "60s"
         per_series_aligner   = "ALIGN_SUM"
         cross_series_reducer = "REDUCE_SUM"
-        group_by_fields      = local.default_group_by_fields
+        group_by_fields      = distinct(concat(local.default_group_by_fields, var.job_failure_configuration.additional_group_by_fields != null ? var.job_failure_configuration.additional_group_by_fields : []))
       }
 
       trigger {
