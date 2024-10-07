@@ -59,9 +59,11 @@ variable "enable_built_in_forward_progress_indicators" {
 variable "built_in_forward_progress_indicators" {
   description = "Map for forward progress Cloud Run indicators. The window must be in seconds."
   type = map(object({
-    metric    = string
-    window    = number
-    threshold = number
+    metric                     = string
+    window                     = number
+    threshold                  = number
+    additional_filters         = optional(string)
+    additional_group_by_fields = optional(list(string))
   }))
 }
 
@@ -74,10 +76,12 @@ variable "enable_built_in_container_indicators" {
 variable "built_in_container_util_indicators" {
   description = "Map for Cloud Run container utilization indicators. The window must be in seconds. Threshold should be represented "
   type = map(object({
-    metric    = string
-    window    = number
-    threshold = number
-    p_value   = optional(number)
+    metric                     = string
+    window                     = number
+    threshold                  = number
+    p_value                    = optional(number)
+    additional_filters         = optional(string)
+    additional_group_by_fields = optional(list(string))
   }))
 }
 
@@ -97,7 +101,8 @@ variable "log_based_text_indicators" {
       window    = number
       threshold = number
     })
-    additional_filters = optional(string)
+    additional_filters         = optional(string)
+    additional_group_by_fields = optional(list(string))
   }))
   validation {
     condition = alltrue([
@@ -118,14 +123,14 @@ variable "enable_log_based_json_indicators" {
 variable "log_based_json_indicators" {
   description = "Map for log based indicators using JSON payload. Payload message is a regex match."
   type = map(object({
-    log_name_suffix      = string
-    severity             = string
-    json_payload_message = string
+    log_name_suffix = string
+    severity        = string
     condition_threshold = object({
       window    = number
       threshold = number
     })
-    additional_filters = optional(string)
+    additional_filters         = optional(string)
+    additional_group_by_fields = optional(list(string))
   }))
   validation {
     condition = alltrue([
@@ -140,44 +145,56 @@ variable "log_based_json_indicators" {
 variable "service_4xx_configuration" {
   description = "Configuration applied to the 4xx alert policy. Only applies to services."
   type = object({
-    enabled   = bool
-    window    = number
-    threshold = number
+    enabled                    = bool
+    window                     = number
+    threshold                  = number
+    additional_filters         = optional(string)
+    additional_group_by_fields = optional(list(string))
   })
   default = {
-    enabled   = true
-    window    = 300
-    threshold = 0
+    enabled                    = true
+    window                     = 300
+    threshold                  = 0
+    additional_filters         = ""
+    additional_group_by_fields = []
   }
 }
 
 variable "service_5xx_configuration" {
   description = "Configuration applied to the 5xx alert policy. Only applies to services."
   type = object({
-    enabled   = bool
-    window    = number
-    threshold = number
+    enabled                    = bool
+    window                     = number
+    threshold                  = number
+    additional_filters         = optional(string)
+    additional_group_by_fields = optional(list(string))
   })
   default = {
-    enabled   = true
-    window    = 300
-    threshold = 0
+    enabled                    = true
+    window                     = 300
+    threshold                  = 0
+    additional_filters         = ""
+    additional_group_by_fields = []
   }
 }
 
 variable "service_latency_configuration" {
   description = "Configuration applied to the request latency alert policy. Only applies to services."
   type = object({
-    enabled   = bool
-    window    = number
-    threshold = number
-    p_value   = number
+    enabled                    = bool
+    window                     = number
+    threshold                  = number
+    p_value                    = number
+    additional_filters         = optional(string)
+    additional_group_by_fields = optional(list(string))
   })
   default = {
-    enabled   = true
-    window    = 300
-    threshold = 0
-    p_value   = 95
+    enabled                    = true
+    window                     = 300
+    threshold                  = 0
+    p_value                    = 95
+    additional_filters         = ""
+    additional_group_by_fields = []
   }
   validation {
     condition     = contains([50, 95, 99], var.service_latency_configuration.p_value)
@@ -188,16 +205,20 @@ variable "service_latency_configuration" {
 variable "service_max_conns_configuration" {
   description = "Configuration applied to the max connections alert policy. Only applies to services."
   type = object({
-    enabled   = bool
-    window    = number
-    threshold = number
-    p_value   = number
+    enabled                    = bool
+    window                     = number
+    threshold                  = number
+    p_value                    = number
+    additional_filters         = optional(string)
+    additional_group_by_fields = optional(list(string))
   })
   default = {
-    enabled   = true
-    window    = 300
-    threshold = 0
-    p_value   = 95
+    enabled                    = true
+    window                     = 300
+    threshold                  = 0
+    p_value                    = 95
+    additional_filters         = ""
+    additional_group_by_fields = []
   }
   validation {
     condition     = contains([50, 95, 99], var.service_max_conns_configuration.p_value)
@@ -208,13 +229,17 @@ variable "service_max_conns_configuration" {
 variable "job_failure_configuration" {
   description = "Configuration applied to the job failure alert policy. Only applies to jobs."
   type = object({
-    enabled   = bool
-    window    = number
-    threshold = number
+    enabled                    = bool
+    window                     = number
+    threshold                  = number
+    additional_filters         = optional(string)
+    additional_group_by_fields = optional(list(string))
   })
   default = {
-    enabled   = true
-    window    = 300
-    threshold = 0
+    enabled                    = true
+    window                     = 300
+    threshold                  = 0
+    additional_filters         = ""
+    additional_group_by_fields = []
   }
 }

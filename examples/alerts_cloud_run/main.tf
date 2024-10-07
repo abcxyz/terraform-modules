@@ -54,10 +54,10 @@ module "cloud_run_service_alerts" {
   enable_log_based_json_indicators = true
   log_based_json_indicators = {
     "email-bounce-failure" = {
-      log_name_suffix      = "stdout"
-      severity             = "ERROR"
-      json_payload_message = "Failed.*"
-      additional_filters   = "jsonPayload.method=<your_method_name>"
+      log_name_suffix    = "stdout"
+      severity           = "ERROR"
+      additional_filters = "jsonPayload.message=\"foo\" AND jsonPayload.method=<your_method_name>"
+
       condition_threshold = {
         window    = 10 * local.minute
         threshold = 0
