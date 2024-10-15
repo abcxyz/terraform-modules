@@ -65,6 +65,7 @@ variable "built_in_forward_progress_indicators" {
     additional_filters         = optional(string)
     additional_group_by_fields = optional(list(string))
   }))
+  default = {}
 }
 
 variable "enable_built_in_container_indicators" {
@@ -83,6 +84,7 @@ variable "built_in_container_util_indicators" {
     additional_filters         = optional(string)
     additional_group_by_fields = optional(list(string))
   }))
+  default = {}
 }
 
 variable "enable_log_based_text_indicators" {
@@ -152,7 +154,7 @@ variable "service_4xx_configuration" {
     additional_group_by_fields = optional(list(string))
   })
   default = {
-    enabled                    = true
+    enabled                    = false
     window                     = 300
     threshold                  = 0
     additional_filters         = ""
@@ -170,7 +172,7 @@ variable "service_5xx_configuration" {
     additional_group_by_fields = optional(list(string))
   })
   default = {
-    enabled                    = true
+    enabled                    = false
     window                     = 300
     threshold                  = 0
     additional_filters         = ""
@@ -189,7 +191,7 @@ variable "service_latency_configuration" {
     additional_group_by_fields = optional(list(string))
   })
   default = {
-    enabled                    = true
+    enabled                    = false
     window                     = 300
     threshold                  = 0
     p_value                    = 95
@@ -213,7 +215,7 @@ variable "service_max_conns_configuration" {
     additional_group_by_fields = optional(list(string))
   })
   default = {
-    enabled                    = true
+    enabled                    = false
     window                     = 300
     threshold                  = 0
     p_value                    = 95
@@ -236,7 +238,7 @@ variable "job_failure_configuration" {
     additional_group_by_fields = optional(list(string))
   })
   default = {
-    enabled                    = true
+    enabled                    = false
     window                     = 300
     threshold                  = 0
     additional_filters         = ""
