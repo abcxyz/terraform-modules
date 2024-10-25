@@ -82,10 +82,10 @@ module "cloud_run_service_alerts" {
   }
 
   service_latency_configuration = {
-    enabled   = true
-    window    = 300
-    threshold = 0
-    p_value   = 95
+    enabled      = true
+    window       = 300
+    threshold_ms = 0
+    p_value      = 95
   }
 
   service_max_conns_configuration = {
@@ -121,7 +121,7 @@ module "cloud_run_service_alerts" {
 | <a name="input_runbook_urls"></a> [runbook\_urls](#input\_runbook\_urls) | URLs of markdown files. | <pre>object({<br>    forward_progress = optional(string)<br>    container_util   = optional(string)<br>    bad_request      = optional(string)<br>    server_fault     = optional(string)<br>    request_latency  = optional(string)<br>    max_conns        = optional(string)<br>    job_failure      = optional(string)<br>    text_based_logs  = optional(string)<br>    json_based_logs  = optional(string)<br>  })</pre> | n/a | yes |
 | <a name="input_service_4xx_configuration"></a> [service\_4xx\_configuration](#input\_service\_4xx\_configuration) | Configuration applied to the 4xx alert policy. Only applies to services. | <pre>object({<br>    enabled                    = bool<br>    window                     = number<br>    threshold                  = number<br>    additional_filters         = optional(string)<br>    additional_group_by_fields = optional(list(string))<br>  })</pre> | <pre>{<br>  "additional_filters": "",<br>  "additional_group_by_fields": [],<br>  "enabled": false,<br>  "threshold": 0,<br>  "window": 300<br>}</pre> | no |
 | <a name="input_service_5xx_configuration"></a> [service\_5xx\_configuration](#input\_service\_5xx\_configuration) | Configuration applied to the 5xx alert policy. Only applies to services. | <pre>object({<br>    enabled                    = bool<br>    window                     = number<br>    threshold                  = number<br>    additional_filters         = optional(string)<br>    additional_group_by_fields = optional(list(string))<br>  })</pre> | <pre>{<br>  "additional_filters": "",<br>  "additional_group_by_fields": [],<br>  "enabled": false,<br>  "threshold": 0,<br>  "window": 300<br>}</pre> | no |
-| <a name="input_service_latency_configuration"></a> [service\_latency\_configuration](#input\_service\_latency\_configuration) | Configuration applied to the request latency alert policy. Only applies to services. | <pre>object({<br>    enabled                    = bool<br>    window                     = number<br>    threshold                  = number<br>    p_value                    = number<br>    additional_filters         = optional(string)<br>    additional_group_by_fields = optional(list(string))<br>  })</pre> | <pre>{<br>  "additional_filters": "",<br>  "additional_group_by_fields": [],<br>  "enabled": false,<br>  "p_value": 95,<br>  "threshold": 0,<br>  "window": 300<br>}</pre> | no |
+| <a name="input_service_latency_configuration"></a> [service\_latency\_configuration](#input\_service\_latency\_configuration) | Configuration applied to the request latency alert policy. Only applies to services. | <pre>object({<br>    enabled                    = bool<br>    window                     = number<br>    threshold_ms               = number<br>    p_value                    = number<br>    additional_filters         = optional(string)<br>    additional_group_by_fields = optional(list(string))<br>  })</pre> | <pre>{<br>  "additional_filters": "",<br>  "additional_group_by_fields": [],<br>  "enabled": false,<br>  "p_value": 95,<br>  "threshold_ms": 0,<br>  "window": 300<br>}</pre> | no |
 | <a name="input_service_max_conns_configuration"></a> [service\_max\_conns\_configuration](#input\_service\_max\_conns\_configuration) | Configuration applied to the max connections alert policy. Only applies to services. | <pre>object({<br>    enabled                    = bool<br>    window                     = number<br>    threshold                  = number<br>    p_value                    = number<br>    additional_filters         = optional(string)<br>    additional_group_by_fields = optional(list(string))<br>  })</pre> | <pre>{<br>  "additional_filters": "",<br>  "additional_group_by_fields": [],<br>  "enabled": false,<br>  "p_value": 95,<br>  "threshold": 0,<br>  "window": 300<br>}</pre> | no |
 
 ## Outputs

@@ -185,7 +185,7 @@ variable "service_latency_configuration" {
   type = object({
     enabled                    = bool
     window                     = number
-    threshold                  = number
+    threshold_ms               = number
     p_value                    = number
     additional_filters         = optional(string)
     additional_group_by_fields = optional(list(string))
@@ -193,7 +193,7 @@ variable "service_latency_configuration" {
   default = {
     enabled                    = false
     window                     = 300
-    threshold                  = 0
+    threshold_ms               = 0
     p_value                    = 95
     additional_filters         = ""
     additional_group_by_fields = []

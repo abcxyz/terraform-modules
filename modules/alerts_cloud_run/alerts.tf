@@ -514,7 +514,7 @@ resource "google_monitoring_alert_policy" "service_latency_alert_policy" {
 
       duration        = "${var.service_latency_configuration.window}s"
       comparison      = "COMPARISON_GT"
-      threshold_value = var.service_latency_configuration.threshold
+      threshold_value = var.service_latency_configuration.threshold_ms
 
       aggregations {
         alignment_period     = "60s"
