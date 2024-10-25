@@ -78,10 +78,10 @@ module "cloud_run_service_alerts" {
   }
 
   service_latency_configuration = {
-    enabled   = true
-    window    = 300
-    threshold = 0
-    p_value   = 95
+    enabled      = true
+    window       = 300
+    threshold_ms = 0
+    p_value      = 95
   }
 
   service_max_conns_configuration = {
