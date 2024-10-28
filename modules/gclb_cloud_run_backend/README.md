@@ -46,7 +46,7 @@ module "gclb_cloud_run_backend" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_domains"></a> [domains](#input\_domains) | Domain names to use for the HTTPS Global Load Balancer for the Cloud Run service (e.g. ["my-project.e2e.tycho.joonix.net"]). | `list(string)` | n/a | yes |
-| <a name="input_iap_config"></a> [iap\_config](#input\_iap\_config) | Identity-Aware Proxy configuration for the load balancer. | <pre>object({<br/>    enable               = bool<br/>    oauth2_client_id     = string<br/>    oauth2_client_secret = string<br/>  })</pre> | <pre>{<br/>  "enable": false,<br/>  "oauth2_client_id": "",<br/>  "oauth2_client_secret": ""<br/>}</pre> | no |
+| <a name="input_iap_config"></a> [iap\_config](#input\_iap\_config) | Identity-Aware Proxy configuration for the load balancer. | <pre>object({<br>    enable               = bool<br>    oauth2_client_id     = string<br>    oauth2_client_secret = string<br>  })</pre> | <pre>{<br>  "enable": false,<br>  "oauth2_client_id": "",<br>  "oauth2_client_secret": ""<br>}</pre> | no |
 | <a name="input_name"></a> [name](#input\_name) | The name of this project. | `string` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The Google Cloud project ID. | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | The default Google Cloud region to deploy resources in (defaults to 'us-central1'). | `string` | `"us-central1"` | no |
