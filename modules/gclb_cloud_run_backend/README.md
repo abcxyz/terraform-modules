@@ -46,7 +46,7 @@ module "gclb_cloud_run_backend" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_domains"></a> [domains](#input\_domains) | Domain names to use for the HTTPS Global Load Balancer for the Cloud Run service (e.g. ["my-project.e2e.tycho.joonix.net"]). | `list(string)` | n/a | yes |
-| <a name="input_iap_config"></a> [iap\_config](#input\_iap\_config) | Identity-Aware Proxy configuration for the load balancer. | <pre>object({<br>    enable               = bool<br>    oauth2_client_id     = string<br>    oauth2_client_secret = string<br>  })</pre> | <pre>{<br>  "enable": false,<br>  "oauth2_client_id": "",<br>  "oauth2_client_secret": ""<br>}</pre> | no |
+| <a name="input_iap_config"></a> [iap\_config](#input\_iap\_config) | Identity-Aware Proxy configuration for the load balancer. | <pre>object({<br/>    enable               = bool<br/>    oauth2_client_id     = string<br/>    oauth2_client_secret = string<br/>  })</pre> | <pre>{<br/>  "enable": false,<br/>  "oauth2_client_id": "",<br/>  "oauth2_client_secret": ""<br/>}</pre> | no |
 | <a name="input_name"></a> [name](#input\_name) | The name of this project. | `string` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The Google Cloud project ID. | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | The default Google Cloud region to deploy resources in (defaults to 'us-central1'). | `string` | `"us-central1"` | no |
@@ -65,13 +65,13 @@ module "gclb_cloud_run_backend" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
-| <a name="requirement_google"></a> [google](#requirement\_google) | >= 4.45 |
+| <a name="requirement_google"></a> [google](#requirement\_google) | >= 6.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | >= 4.45 |
+| <a name="provider_google"></a> [google](#provider\_google) | >= 6.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | n/a |
 
 ## Resources
