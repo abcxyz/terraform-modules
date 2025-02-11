@@ -62,8 +62,8 @@ resource "google_monitoring_alert_policy" "forward_progress_alert_policy" {
 
         aggregations {
           alignment_period     = "60s"
-          per_series_aligner   = "ALIGN_DELTA"
-          cross_series_reducer = "REDUCE_SUM"
+          per_series_aligner   = "ALIGN_COUNT"
+          cross_series_reducer = "REDUCE_COUNT"
           group_by_fields      = distinct(concat(local.default_group_by_fields, conditions.value.additional_group_by_fields != null ? conditions.value.additional_group_by_fields : []))
         }
 
@@ -91,8 +91,8 @@ resource "google_monitoring_alert_policy" "forward_progress_alert_policy" {
 
         aggregations {
           alignment_period     = "60s"
-          per_series_aligner   = "ALIGN_DELTA"
-          cross_series_reducer = "REDUCE_SUM"
+          per_series_aligner   = "ALIGN_COUNT"
+          cross_series_reducer = "REDUCE_COUNT"
           group_by_fields      = distinct(concat(local.default_group_by_fields, conditions.value.additional_group_by_fields != null ? conditions.value.additional_group_by_fields : []))
         }
       }
