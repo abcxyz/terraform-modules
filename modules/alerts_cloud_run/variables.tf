@@ -245,3 +245,8 @@ variable "job_failure_configuration" {
     additional_group_by_fields = []
   }
 }
+
+variable "dashboard_json_files" {
+  description = "Path to a dashboard configuration JSON files"
+  type        = list(string)
+}
