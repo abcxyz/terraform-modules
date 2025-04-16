@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   terraform_lint:
-    uses: 'abcxyz/pkg/.github/workflows/terraform-lint.yml@main' # ratchet:exclude
+    uses: 'abcxyz/actions/.github/workflows/terraform-lint.yml@main' # ratchet:exclude
     with:
       directory: './modules'
       terraform_version: '1.7.0'
@@ -31,7 +31,7 @@ jobs:
         uses: 'actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11' # ratchet:actions/checkout@v4
 
       - name: 'Setup terraform-docs'
-        uses: 'abcxyz/pkg/.github/actions/setup-binary@main' # ratchet:exclude
+        uses: 'abcxyz/actions/.github/actions/setup-binary@main' # ratchet:exclude
         with:
           download_url: 'https://github.com/terraform-docs/terraform-docs/releases/download/v${{ env.TFDOCS_VERSION }}/terraform-docs-v${{ env.TFDOCS_VERSION }}-linux-amd64.tar.gz'
           checksum: '8e436d0c44db49c2ccd95deede05c3deba324b34a274be06cd9ba9cdf644e795'
