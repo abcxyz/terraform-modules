@@ -47,7 +47,7 @@ jobs:
 
           DIFF=$(git status --porcelain)
 
-          if [ ! -z "${DIFF}" ]; then
+          if [ -n "${DIFF}" ]; then
             echo "ERROR: The following files differ from the pull request:"
             echo ""
             echo "${DIFF}"
