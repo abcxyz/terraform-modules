@@ -191,6 +191,7 @@ resource "google_logging_metric" "text_payload_logging_metric" {
 
   filter = <<EOT
     resource.type=${local.resource_type}
+    resource.labels.service_name=${local.resource_value}
     log_name="projects/${var.project_id}/logs/${local.metric_root}%2F${replace(each.value.log_name_suffix, "/", "%2F")}"
     severity=${each.value.severity}
     textPayload=~"${each.value.text_payload_message}"
@@ -288,6 +289,7 @@ resource "google_logging_metric" "json_payload_logging_metric" {
 
   filter = <<EOT
     resource.type=${local.resource_type}
+    resource.labels.service_name=${local.resource_value}
     log_name="projects/${var.project_id}/logs/${local.metric_root}%2F${replace(each.value.log_name_suffix, "/", "%2F")}"
     severity=${each.value.severity}
     ${each.value.additional_filters != null ? each.value.additional_filters : ""}
