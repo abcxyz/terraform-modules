@@ -408,8 +408,9 @@ resource "google_logging_metric" "advanced_json_payload_logging_metric" {
   label_extractors = each.value.label_extractors
 }
 
-# Individual metric alert policies
-resource "google_monitoring_alert_policy" "individual_metric_alert_policies" {
+# Alert policies for individual advanced JSON metrics
+# This creates alerts for metrics with alert_condition defined directly in the metric
+resource "google_monitoring_alert_policy" "advanced_json_payload_alert_policy" {
   for_each = {
     for k, v in var.advanced_log_based_json_indicators : k => v
     if v.alert_condition != null && var.enable_advanced_log_based_json_indicators
@@ -472,8 +473,9 @@ resource "google_monitoring_alert_policy" "individual_metric_alert_policies" {
   ]
 }
 
-# User-defined combined alert policies
-resource "google_monitoring_alert_policy" "combined_alert_policies" {
+# Alert policies for combined advanced JSON metrics
+# This creates policies that can monitor multiple metrics in a single alert
+resource "google_monitoring_alert_policy" "advanced_json_combined_alert_policy" {
   for_each = var.enable_advanced_log_based_json_indicators ? var.advanced_json_alert_policies : {}
 
   project = var.project_id
