@@ -62,9 +62,11 @@ resource "google_cloud_run_service" "service" {
   autogenerate_revision_name = true
 
   metadata {
-    annotations = local.default_run_service_annotations
+    annotations = merge(
+      local.default_run_service_annotations,
+      var.additional_service_annotations,
+    )
   }
-
 
   template {
     spec {
@@ -157,7 +159,8 @@ resource "google_cloud_run_service" "service" {
     }
 
     metadata {
-      annotations = merge(local.default_run_revision_annotations,
+      annotations = merge(
+        local.default_run_revision_annotations,
         var.additional_revision_annotations,
       )
     }
