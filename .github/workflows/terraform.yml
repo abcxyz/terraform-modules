@@ -11,7 +11,7 @@ on:
 
 env:
   TERRAFORM_VERSION: '1.7.0'
-  TFDOCS_VERSION: '0.17.0'
+  TFDOCS_VERSION: '0.20.0'
 
 concurrency:
   group: '${{ github.workflow }}-${{ github.head_ref || github.ref }}'
@@ -34,7 +34,7 @@ jobs:
         uses: 'abcxyz/actions/.github/actions/setup-binary@main' # ratchet:exclude
         with:
           download_url: 'https://github.com/terraform-docs/terraform-docs/releases/download/v${{ env.TFDOCS_VERSION }}/terraform-docs-v${{ env.TFDOCS_VERSION }}-linux-amd64.tar.gz'
-          checksum: '8e436d0c44db49c2ccd95deede05c3deba324b34a274be06cd9ba9cdf644e795'
+          checksum: '34ae01772412bb11474e6718ea62113e38ff5964ee570a98c69fafe3a6dff286'
           install_path: '${{ runner.temp }}/.terraform-docs'
           binary_subpath: 'terraform-docs'
           cache_key: '${{ runner.os }}_${{ runner.arch }}_terraform-docs_${{ env.TFDOCS_VERSION }}'
