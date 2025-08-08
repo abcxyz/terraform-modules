@@ -48,6 +48,16 @@ variable "security_policy" {
   description = "Cloud Armor security policy for the load balancer."
 }
 
+variable "trace_sampling_rate" {
+  type        = number
+  description = "The percentage of requests for which Cloud Trace will add a trace header and sample the trace. Valid values are 0.0 to 1.0."
+  default     = null
+  validation {
+    condition     = var.trace_sampling_rate == null || (var.trace_sampling_rate >= 0.0 && var.trace_sampling_rate <= 1.0)
+    error_message = "The trace_sampling_rate must be between 0.0 and 1.0."
+  }
+}
+
 variable "iap_config" {
   type = object({
     enable               = bool

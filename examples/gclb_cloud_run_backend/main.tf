@@ -6,4 +6,7 @@ module "gclb_cloud_run_backend" {
   name             = "project-name"
   run_service_name = "service-name"
   domains          = ["project.company.domain.com"]
+
+  # Sample 50% of requests for tracing.
+  trace_sampling_rate = 0.5
 }

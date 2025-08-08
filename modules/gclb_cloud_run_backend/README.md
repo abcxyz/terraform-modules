@@ -52,6 +52,7 @@ module "gclb_cloud_run_backend" {
 | <a name="input_region"></a> [region](#input\_region) | The default Google Cloud region to deploy resources in (defaults to 'us-central1'). | `string` | `"us-central1"` | no |
 | <a name="input_run_service_name"></a> [run\_service\_name](#input\_run\_service\_name) | The name of the Cloud Run service to the compute backend serverless network endpoint group. | `string` | n/a | yes |
 | <a name="input_security_policy"></a> [security\_policy](#input\_security\_policy) | Cloud Armor security policy for the load balancer. | `string` | `null` | no |
+| <a name="input_trace_sampling_rate"></a> trace\_sampling\_rate | The percentage of requests for which Cloud Trace will add a trace header and sample the trace. Valid values are 0.0 to 1.0. | `number` | `null` | no |
 
 ## Outputs
 
