@@ -147,19 +147,21 @@ resource "google_compute_region_network_endpoint_group" "default" {
 resource "google_compute_backend_service" "default" {
   project = var.project_id
 
-  name                  = "${substr(var.name, 0, 50)}-${random_id.default.hex}-backend" # 63 character limit
-  load_balancing_scheme = "EXTERNAL"
-  description           = "${var.name} backend"
-  security_policy       = var.security_policy != null ? var.security_policy : null
+  name                      = "${substr(var.name, 0, 50)}-${random_id.default.hex}-backend" # 63 character limit
+  load_balancing_scheme     = "EXTERNAL"
+  description               = "${var.name} backend"
+  security_policy           = var.security_policy
 
   backend {
     description = "${var.name} serverless backend group"
     group       = google_compute_region_network_endpoint_group.default.id
   }
 
+  # The sample_rate in log_config controls the sampling rate for both logging
+  # and Cloud Trace.
   log_config {
     enable      = true
-    sample_rate = "1.0"
+    sample_rate = coalesce(var.trace_sampling_rate, 1.0)
   }
 
   dynamic "iap" {
