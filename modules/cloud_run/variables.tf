@@ -155,8 +155,8 @@ variable "additional_revision_annotations" {
 }
 
 variable "timeout_seconds" {
-  type = number
-  default = null
+  type        = number
+  default     = null
   description = "(Optional) TimeoutSeconds holds the max duration the instance is allowed for responding to a request."
 }
 
