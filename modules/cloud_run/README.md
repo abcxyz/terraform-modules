@@ -70,6 +70,7 @@ module "cloud_run" {
 | <a name="input_service_account_email"></a> [service\_account\_email](#input\_service\_account\_email) | The service account email for Cloud Run to run as. | `string` | n/a | yes |
 | <a name="input_service_iam"></a> [service\_iam](#input\_service\_iam) | IAM member bindings for the Cloud Run service. | <pre>object({<br/>    admins     = list(string)<br/>    developers = list(string)<br/>    invokers   = list(string)<br/>  })</pre> | <pre>{<br/>  "admins": [],<br/>  "developers": [],<br/>  "invokers": []<br/>}</pre> | no |
 | <a name="input_startup_probe"></a> [startup\_probe](#input\_startup\_probe) | Optional startup probe configuration | <pre>object({<br/>    initial_delay_seconds = optional(number, 0)<br/>    timeout_seconds       = optional(number, 1)<br/>    period_seconds        = optional(number, 10)<br/>    failure_threshold     = optional(number, 3)<br/>    http_get = optional(object({<br/>      http_headers = optional(map(string), {})<br/>      path         = optional(string)<br/>      port         = optional(number)<br/>    }), null)<br/>  })</pre> | `null` | no |
+| <a name="input_timeout_seconds"></a> [timeout\_seconds](#input\_timeout\_seconds) | (Optional) TimeoutSeconds holds the max duration the instance is allowed for responding to a request. | `number` | `null` | no |
 
 ## Outputs
 

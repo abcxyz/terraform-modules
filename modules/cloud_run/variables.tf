@@ -154,6 +154,12 @@ variable "additional_revision_annotations" {
   description = "Annotations to add to the template.metadata.annotations field."
 }
 
+variable "timeout_seconds" {
+  type = number
+  default = null
+  description = "(Optional) TimeoutSeconds holds the max duration the instance is allowed for responding to a request."
+}
+
 variable "startup_probe" {
   type = object({
     initial_delay_seconds = optional(number, 0)
