@@ -143,6 +143,8 @@ resource "google_cloud_run_service" "service" {
         }
       }
 
+      timeout_seconds = var.timeout_seconds
+
       dynamic "volumes" {
         for_each = merge(local.default_run_secret_volumes, var.secret_volumes)
         content {
