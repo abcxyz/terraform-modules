@@ -5,4 +5,3 @@
 *    @abcxyz/infrastructure-team
 
 # terraform-readability owns all terraform files
-*.tf    @abcxyz/terraform-readability
